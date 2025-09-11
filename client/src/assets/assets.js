@@ -159,21 +159,7 @@ export const dummyUsers = [
 ];
 
 export const dummyPosts = [
-  {
-    caption: "A beautiful view of the mountains.",
-    image: mountains,
-    author: "83498934jjfj782375432",
-    likes: 48,
-    dislikes: 5,
-    comments: [
-      {
-        user: "xlsidjf9323lkj4lkj234",
-        text: "Amazing! I also wanna come here",
-        createdAt: Date.now() - 1000000,
-      },
-    ],
-    createdAt: Date.now() - 3600000,
-  },
+  
   {
     caption: "Trying a new recipe for homemade pasta. 🍝",
     image: pasta,
@@ -218,6 +204,21 @@ export const dummyPosts = [
       },
     ],
     createdAt: Date.now() - 1800000,
+  },
+  {
+    caption: "A beautiful view of the mountains.",
+    image: mountains,
+    author: "83498934jjfj782375432",
+    likes: 48,
+    dislikes: 5,
+    comments: [
+      {
+        user: "xlsidjf9323lkj4lkj234",
+        text: "Amazing! I also wanna come here",
+        createdAt: Date.now() - 1000000,
+      },
+    ],
+    createdAt: Date.now() - 3600000,
   },
   {
     caption: "A reset with a quick nature hike.",

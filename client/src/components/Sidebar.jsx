@@ -15,9 +15,9 @@ const Sidebar = () => {
         fixed top-0 left-0 z-50 h-screen w-60 px-4 py-6
         transform transition-transform duration-300
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        md:relative md:translate-x-0 md:w-60
+        md:fixed md:translate-x-0 md:w-60
         ${isDark ? "bg-black text-white" : "bg-white text-black"}
-        shadow-xs shadow-gray-400
+        shadow-xs shadow-gray-400 overflow-y-auto
       `}
     >
       <button

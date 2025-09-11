@@ -1,84 +1,70 @@
 import React from "react";
 import profilePic from "../assets/profile.png";
 import { useAppContext } from "../context/AppContext";
-import assets from "../assets/assets.js";
 import moment from "moment";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 
-const Post = () => {
+const Post = ({ caption, image, likes, comments, createdAt }) => {
   const { isDark } = useAppContext();
   return (
-    <section className=" max-w-[48rem] p-2 ">
-      {/* Profile pic/ follow button */}
-      <div className="flex justify-between items-center px-2">
-        <div className="flex items-center gap-4">
+    <section className="w-full max-w-[45rem] mx-auto p-3">
+      {/* Profile / Follow button */}
+      <div className="flex justify-between items-center px-1 md:px-2">
+        <div className="flex items-center gap-2 md:gap-4">
           <img
-            className={`size-7 ${isDark ? "invert" : ""}`}
             src={profilePic}
-            alt=""
+            alt="profile"
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ${isDark ? "invert" : ""}`}
           />
-          <p className="transition-all hover:font-semibold cursor-pointer">
-            Username here
-          </p>
+          <p className="transition-all hover:font-semibold cursor-pointer">Username here</p>
         </div>
+
         <button
-          className={`rounded-md shadow-md font-semibold px-2 py-1 cursor-pointer hover:shadow-lg transition-all ${
-            isDark ? "bg-[#ffff00] text-black" : "bg-[#c7961c]"
+          className={`rounded-md shadow-md font-semibold px-3 py-1 text-sm cursor-pointer hover:shadow-lg transition-all ${
+            isDark ? "bg-[#ffff00] text-black" : "bg-[#c7961c] text-black"
           }`}
         >
           Follow
         </button>
       </div>
-      {/* Actual image */}
+
+      {/* Actual Image */}
       <div
-        className={`image hover:outline ${
-          isDark ? "hover:outline-[#ffff00]" : "hover:outline-[#c7961c]"
-        } rounded-md overflow-hidden mt-4 mb-0 border-3 ${
-          isDark ? "border-[#1a1a1a]" : "border-gray-100"
-        }`}
+        className={`image mt-4 mb-2 rounded-md overflow-hidden border ${isDark ? "border-[#1a1a1a]" : "border-gray-100"}`}
       >
-        <img className="" src={assets.cloudcomputing} alt="" />
+        <img
+          src={image}
+          alt="post"
+          className="w-full h-auto max-h-[30rem] object-cover"
+        />
       </div>
-      {/* Upload time */}
-      <p className={`${isDark ? "text-[#737373]" : "text-[#737373]"} text-sm`}>
-        {moment(Date.now()).fromNow()}
+
+      {/* Meta */}
+      <p className={`${isDark ? "text-[#737373]" : "text-[#737373]"} text-xs md:text-sm`}>
+        {moment(createdAt).fromNow()}
       </p>
+
       {/* Actions */}
-      <div className="flex items-center gap-3 py-0">
-        <div className={` flex flex-col items-center gap-1  `}>
-          <button
-            className={`rounded-full ${
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
-            } p-2 transition-all`}
-          >
-            <AiOutlineLike className="size-7 cursor-pointer" />
+      <div className="flex items-center gap-4 py-2">
+        <div className="flex flex-col items-center gap-0">
+          <button className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
+            <AiOutlineLike className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span
-            className={`${
-              isDark ? "text-[#737373]" : "text-[#737373]"
-            } text-xs`}
-          >
-            824 likes
-          </span>
+          <span className="text-xs text-[#737373]">{likes} likes</span>
         </div>
-       <div className={` flex flex-col items-center gap-1  `}>
-          <button
-            className={`rounded-full  ${
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
-            } p-2 transition-all`}
-          >
-            <FaRegCommentAlt className="size-7 p-[2px] cursor-pointer" />
+
+        <div className="flex flex-col items-center gap-0">
+          <button className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
+            <FaRegCommentAlt className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span
-            className={`${
-              isDark ? "text-[#737373]" : "text-[#737373]"
-            } text-xs`}
-          >
-            23 comments
-          </span>
+          <span className="text-xs text-[#737373]">{comments} comments</span>
         </div>
       </div>
+
+      {/* Caption */}
+      <p className="break-words">{caption}</p>
+      <hr className="my-5" />
     </section>
   );
 };
