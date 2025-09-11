@@ -1,6 +1,6 @@
 import { IoMdHome } from "react-icons/io";
 import { IoIosSearch } from "react-icons/io";
-import { FaRegUser } from "react-icons/fa6";
+import { FaRegCircleUser } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import "../App.css";
 import { useAppContext } from "../context/AppContext";
@@ -30,23 +30,22 @@ const Sidebar = () => {
       {/* Logo */}
       <div>
         <h1 className={`${isDark ? "text-[#ffff00]" : "text-[#c7961c]"} font-bold text-4xl`}>Momenta</h1>
-        <span className="text-md">Share your moments</span>
+        <span className="text-sm">Share your moments</span>
       </div>
 
       {/* Links */}
       <section className="links mt-8">
-        <NavLink to={'/search'} className={({ isActive }) =>`w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+        <NavLink to={'/search'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <IoIosSearch className="size-7" />
           <p className="text-md">Search</p>
         </NavLink>
-               <NavLink to={'/'} className={({ isActive }) =>`w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+               <NavLink to={'/'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
 
           <IoMdHome className="size-7" />
           <p className="text-md">Home</p>
         </NavLink>
-               <NavLink to={'/profile'} className={({ isActive }) =>`w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
-
-          <FaRegUser className="size-7" />
+               <NavLink to={'/profile'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+          <FaRegCircleUser className="size-7" />
           <p className="text-md">Profile</p>
         </NavLink>
       </section>

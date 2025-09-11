@@ -402,7 +402,7 @@ export const dummyPosts = [
   },
 ];
 
-export const assets = {
+ const assets = {
   architecture,
   bookonancientcivilizations,
   cloudcomputing,
@@ -420,3 +420,4 @@ export const assets = {
   writing,
   cityevening,
 };
+export default assets
