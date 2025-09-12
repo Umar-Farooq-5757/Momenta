@@ -159,7 +159,6 @@ export const dummyUsers = [
 ];
 
 
-
 export const dummyPosts = [
   
   {

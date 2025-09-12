@@ -2,6 +2,7 @@ import { IoMdHome } from "react-icons/io";
 import { IoIosSearch } from "react-icons/io";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
+import { MdOutlineCreateNewFolder } from "react-icons/md";
 import "../App.css";
 import { useAppContext } from "../context/AppContext";
 import { NavLink } from "react-router-dom";
@@ -39,14 +40,17 @@ const Sidebar = () => {
           <IoIosSearch className="size-7" />
           <p className="text-md">Search</p>
         </NavLink>
-               <NavLink to={'/'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
-
+        <NavLink to={'/'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <IoMdHome className="size-7" />
           <p className="text-md">Home</p>
         </NavLink>
-               <NavLink to={'/profile'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+        <NavLink to={'/profile'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <FaRegCircleUser className="size-7" />
           <p className="text-md">Profile</p>
+        </NavLink>
+        <NavLink to={'/newpost'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+          <MdOutlineCreateNewFolder className="size-7" />
+          <p className="text-md">New Post</p>
         </NavLink>
       </section>
 

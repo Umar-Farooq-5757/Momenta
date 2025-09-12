@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
 import Sidebar from "./components/Sidebar";
 import { useAppContext } from "./context/AppContext";

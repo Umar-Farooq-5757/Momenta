@@ -14,7 +14,7 @@ const Search = () => {
       className="grow min-h-screen my-3  md:my-0 pt-12 md:pt-8 px-0 md:px-6 lg:px-8"
     >
       {/* Search bar */}
-      <div className={`flex items-center mb-10 mx-2 text-sm ${isDark?'bg-black':'bg-white'} h-12 border pl-2 rounded border-gray-500/30 w-[95%] max-w-screen`}>
+      <div className={`flex items-center mb-4 mx-2 text-sm ${isDark?'bg-black':'bg-white'} h-12 border pl-2 rounded border-gray-500/30 w-[95%] max-w-screen`}>
         <input
           className={`px-2  w-full h-full outline-none bg-transparent ${isDark?'placeholder:text-gray-500 text-white':'text-gray-500'}`}
           type="text"
@@ -42,13 +42,17 @@ const Search = () => {
       {/* Users */}
       <section className="px-1 sm:px-2 min-h-[70vh]">
         {dummyUsers.length>0?
-        dummyUsers.filter((user)=>user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+      <>
+      {searchQuery? <p>Showing results for "{searchQuery}"</p>:<p>All Users</p>}
+        {dummyUsers.filter((user)=>user.username.toLowerCase().includes(searchQuery.toLowerCase()))
         .map((user,i)=>{
           return (
         <UserCard key={i} username={user.username}/>
 
           )
-        }):
+        })}
+      </>
+      :
         <div className="flex items-center text-2xl sm:text-3xl text-gray-400 gap-3"><MdErrorOutline className="size-10"/> No users found</div>
         }
       </section>

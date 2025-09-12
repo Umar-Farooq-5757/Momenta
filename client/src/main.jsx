@@ -9,6 +9,7 @@ import Profile from "./pages/Profile.jsx";
 import Search from "./pages/Search.jsx";
 import Error from "./pages/Error.jsx";
 import Login from "./pages/Login.jsx";
+import NewPost from "./pages/NewPost.jsx";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <Search />,
+      },
+      {
+        path: "/newpost",
+        element: <NewPost />,
       },
     ],
   },
