@@ -15,9 +15,13 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
           <img
             src={profilePic}
             alt="profile"
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ${isDark ? "invert" : ""}`}
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ${
+              isDark ? "invert" : ""
+            }`}
           />
-          <p className="transition-all hover:font-semibold cursor-pointer">Username here</p>
+          <p className="transition-all hover:font-semibold cursor-pointer">
+            Username here
+          </p>
         </div>
 
         <button
@@ -31,31 +35,53 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
 
       {/* Actual Image */}
       <div
-        className={`image mt-4 mb-2 rounded-md overflow-hidden border ${isDark ? "border-[#1a1a1a]" : "border-gray-100"}`}
+        className={`image mt-4 mb-2 rounded-md overflow-hidden border ${
+          isDark ? "border-[#1a1a1a]" : "border-gray-100"
+        }`}
       >
-        <img
+        {/* <img
           src={image}
           alt="post"
           className="w-full h-auto max-h-[30rem] object-cover"
-        />
+        /> */}
+        <picture>
+          <source srcSet={image} type="image/avif" />
+          <img
+            src={image}
+            alt="post"
+            loading="lazy"
+          />
+        </picture>
       </div>
 
       {/* Meta */}
-      <p className={`${isDark ? "text-[#737373]" : "text-[#737373]"} text-xs md:text-sm`}>
+      <p
+        className={`${
+          isDark ? "text-[#737373]" : "text-[#737373]"
+        } text-xs md:text-sm`}
+      >
         {moment(createdAt).fromNow()}
       </p>
 
       {/* Actions */}
       <div className="flex items-center gap-4 py-2">
         <div className="flex flex-col items-center gap-0">
-          <button className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
+          <button
+            className={`rounded-full ${
+              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
+            } p-2 transition-all`}
+          >
             <AiOutlineLike className="text-xl md:text-2xl cursor-pointer" />
           </button>
           <span className="text-xs text-[#737373]">{likes} likes</span>
         </div>
 
         <div className="flex flex-col items-center gap-0">
-          <button className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
+          <button
+            className={`rounded-full ${
+              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
+            } p-2 transition-all`}
+          >
             <FaRegCommentAlt className="text-xl md:text-2xl cursor-pointer" />
           </button>
           <span className="text-xs text-[#737373]">{comments} comments</span>

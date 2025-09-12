@@ -46,13 +46,13 @@ export const dummyUsers = [
   },
   {
     _id: "kdlsf9834jdkfj8234lk23",
-    username: "Ali Raza",
-    email: "aliraza@example.com",
+    username: "Muhammad Rumman",
+    email: "muhammadrumman044@gmail.com",
     profilePic: "",
     bio: {
       age: 22,
       description: "Marketing Specialist | Social Media Strategist",
-      location: "Karachi, Pakistan",
+      location: "Mianwali, Pakistan",
     },
     password: "a8v7bx92kfjs73ksj284",
     followers: [],
@@ -157,6 +157,8 @@ export const dummyUsers = [
     following: [],
   },
 ];
+
+
 
 export const dummyPosts = [
   

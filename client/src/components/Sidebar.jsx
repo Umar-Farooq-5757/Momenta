@@ -35,16 +35,16 @@ const Sidebar = () => {
 
       {/* Links */}
       <section className="links mt-8">
-        <NavLink to={'/search'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+        <NavLink to={'/search'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <IoIosSearch className="size-7" />
           <p className="text-md">Search</p>
         </NavLink>
-               <NavLink to={'/'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+               <NavLink to={'/'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
 
           <IoMdHome className="size-7" />
           <p className="text-md">Home</p>
         </NavLink>
-               <NavLink to={'/profile'} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+               <NavLink to={'/profile'} onClick={()=>setIsSidebarOpen(false)} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <FaRegCircleUser className="size-7" />
           <p className="text-md">Profile</p>
         </NavLink>
