@@ -4,13 +4,14 @@ import { useAppContext } from "../context/AppContext";
 import moment from "moment";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
+import { SlUserFollow } from "react-icons/sl";
 
 const Post = ({ caption, image, likes, comments, createdAt }) => {
   const { isDark } = useAppContext();
   return (
-    <section className="w-full max-w-[45rem] mx-auto p-3">
+    <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
       {/* Profile / Follow button */}
-      <div className="flex justify-between items-center px-1 md:px-2">
+      <div className="flex justify-between items-center px-0 sm:px-1 md:px-2">
         <div className="flex items-center gap-2 md:gap-4">
           <img
             src={profilePic}
@@ -23,12 +24,15 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
             Username here
           </p>
         </div>
-
         <button
-          className={`rounded-md shadow-md font-semibold px-3 py-1 text-sm cursor-pointer hover:shadow-lg transition-all ${
-            isDark ? "bg-[#ffff00] text-black" : "bg-[#c7961c] text-black"
-          }`}
+          type="button"
+          className={`sm:text-[13px] flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
+            isDark
+              ? "hover:border-[#c7961c] bg-black text-white hover:bg-[#fff5dc]"
+              : "hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]"
+          } active:scale-95 transition`}
         >
+          <SlUserFollow className="size-3 sm:size-4" />
           Follow
         </button>
       </div>
@@ -39,18 +43,9 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
           isDark ? "border-[#1a1a1a]" : "border-gray-100"
         }`}
       >
-        {/* <img
-          src={image}
-          alt="post"
-          className="w-full h-auto max-h-[30rem] object-cover"
-        /> */}
         <picture>
           <source srcSet={image} type="image/avif" />
-          <img
-            src={image}
-            alt="post"
-            loading="lazy"
-          />
+          <img src={image} alt="post" loading="lazy" />
         </picture>
       </div>
 

@@ -16,7 +16,7 @@ const Search = () => {
       {/* Search bar */}
       <div className={`flex items-center mb-10 mx-2 text-sm ${isDark?'bg-black':'bg-white'} h-12 border pl-2 rounded border-gray-500/30 w-[95%] max-w-screen`}>
         <input
-          className={`px-2  w-full h-full outline-none text-gray-500 bg-transparent ${isDark?'placeholder:text-gray-500':''}`}
+          className={`px-2  w-full h-full outline-none bg-transparent ${isDark?'placeholder:text-gray-500 text-white':'text-gray-500'}`}
           type="text"
           placeholder="Search user..."
           value={searchQuery}

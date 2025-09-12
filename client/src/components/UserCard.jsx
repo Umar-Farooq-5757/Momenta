@@ -6,7 +6,7 @@ import { useAppContext } from '../context/AppContext';
 const UserCard = ({username}) => {
     const {isDark} = useAppContext()
   return (
-    <div className={`my-5 flex items-center justify-between hover:scale-[1.008] ${isDark?'hover:border-[#ffff00] hover:bg-[#1a1a1a]':'hover:border-gray-300 hover:bg-gray-100'}  transition-all border ${isDark?'border-[#474747]':'border-gray-200'} px-3 py-2 rounded-sm`}>
+    <div className={`my-5 flex items-center justify-between hover:scale-[1.008] ${isDark?'hover:border-[#c7961c] hover:bg-[#1a1a1a]':'hover:border-gray-300 hover:bg-gray-100'}  transition-all border ${isDark?'border-[#474747]':'border-gray-200'} px-3 py-2 rounded-sm`}>
       <div className='flex justify-start items-center gap-2 sm:gap-3 '>
         <img className={`size-7 sm:size-9 rounded-full ${isDark?'invert':''}`} src={profilePic} alt="profile pic" />
         <h2 className='text-[13px] sm:text-[16px]'>{username}</h2>

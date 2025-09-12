@@ -29,7 +29,7 @@ const Sidebar = () => {
 
       {/* Logo */}
       <div>
-        <h1 className={`${isDark ? "text-[#ffff00]" : "text-[#c7961c]"} font-bold text-4xl`}>Momenta</h1>
+        <h1 className={`text-[#c7961c] font-bold text-4xl`}>Momenta</h1>
         <span className="text-sm">Share your moments</span>
       </div>
 
