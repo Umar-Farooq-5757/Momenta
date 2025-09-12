@@ -11,8 +11,8 @@ export default function NewPost() {
   const inputRef = useRef(null);
   const dropRef = useRef(null);
 
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const CAPTION_MAX = 2200;
+  const maxFileSize = 5 * 1024 * 1024; // 5MB
+  const captionMax = 2200;
 
   useEffect(() => {
     if (!file) {
@@ -37,13 +37,12 @@ export default function NewPost() {
         return;
       }
     }
-    if (f.size > MAX_FILE_SIZE) {
+    if (f.size > maxFileSize) {
       setError("Image is too large. Max size is 5MB.");
       return;
     }
     setFile(f);
 
-    // Clear the input value so selecting the same file later will still fire onChange
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -81,8 +80,8 @@ export default function NewPost() {
       setError("Please choose an image before posting.");
       return;
     }
-    if (caption.length > CAPTION_MAX) {
-      setError(`Caption can't be longer than ${CAPTION_MAX} characters.`);
+    if (caption.length > captionMax) {
+      setError(`Caption can't be longer than ${captionMax} characters.`);
       return;
     }
     setIsSubmitting(true);
@@ -92,10 +91,10 @@ export default function NewPost() {
       formData.append("caption", caption);
 
       // Replace with your API endpoint
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        body: formData,
-      });
+    //   const res = await fetch("/api/posts", {
+    //     method: "POST",
+    //     body: formData,
+    //   });
 
       if (!res.ok) throw new Error("Upload failed");
       setCaption("");
@@ -179,13 +178,13 @@ export default function NewPost() {
                   id="caption"
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
-                  maxLength={CAPTION_MAX}
+                  maxLength={captionMax}
                   rows={5}
                   placeholder="Write a caption..."
                   className={`w-full resize-none mt-1 border rounded p-3 outline-none ${isDark ? "bg-[#0b0b0b] border-gray-800 text-white" : "bg-white border-gray-200 text-gray-700"}`}
                 />
                 <div className="mt-2 flex items-center justify-between text-xs text-gray-400">
-                  <span>{caption.length}/{CAPTION_MAX}</span>
+                  <span>{caption.length}/{captionMax}</span>
                   <span>{error ? <span className="text-rose-500">{error}</span> : null}</span>
                 </div>
               </div>
