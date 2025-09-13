@@ -1,6 +1,6 @@
 import React from 'react'
 import { SlUserFollow } from "react-icons/sl";
-import profilePic from '../assets/profile.png'
+import profilePic from '../assets/profile.avif'
 import { useAppContext } from '../context/AppContext';
 
 const UserCard = ({username}) => {

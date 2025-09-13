@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.model.js";
-import jwt from 'jsonwebtoken'
 
 
 const protect = async (req, res, next) => {
@@ -18,3 +17,5 @@ const protect = async (req, res, next) => {
     return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 };
+
+export default protect

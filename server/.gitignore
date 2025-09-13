@@ -32,3 +32,5 @@ coverage/
 
 # Test artifacts
 /test/results/
+
+uploads/

@@ -1,19 +1,19 @@
-import architecture from "./architecture.jpeg";
-import bookonancientcivilizations from "./bookonancientcivilizations.jpeg";
-import cloudcomputing from "./cloudcomputing.jpeg";
-import historicalpapers from "./historicalpapers.jpeg";
-import labexperiment from "./labexperiment.jpeg";
-import marketing from "./marketing.jpeg";
-import mixingpaints from "./mixingpaints.jpeg";
-import mountains from "./mountains.jpeg";
-import nature from "./nature.jpeg";
+import architecture from "./architecture.avif";
+import bookonancientcivilizations from "./bookonancientcivilizations.avif";
+import cloudcomputing from "./cloudcomputing.avif";
+import historicalpapers from "./historicalpapers.avif";
+import labexperiment from "./labexperiment.avif";
+import marketing from "./marketing.avif";
+import mixingpaints from "./mixingpaints.avif";
+import mountains from "./mountains.avif";
+import nature from "./nature.avif";
 import oceanview from "./oceanview.jpeg";
 import pasta from "./pasta.jpeg";
 import piano from "./piano.jpeg";
 import planting from "./planting.jpeg";
-import sculpture from "./sculpture.jpeg";
-import writing from "./writing.jpeg";
-import cityevening from "./cityevening.jpeg";
+import sculpture from "./sculpture.avif";
+import writing from "./writing.avif";
+import cityevening from "./cityevening.avif";
 
 export const dummyUsers = [
   {

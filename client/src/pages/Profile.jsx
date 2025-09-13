@@ -1,4 +1,4 @@
-import profilePic from "../assets/profile.png";
+import profilePic from "../assets/profile.avif";
 import { useAppContext } from "../context/AppContext";
 import assets from "../assets/assets.js";
 
