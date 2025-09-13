@@ -1,6 +1,6 @@
 import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
 // generate JWT token
 const generateToken = (id) => {
@@ -37,4 +37,32 @@ const userRegister = async (req, res) => {
   }
 };
 
-export {userRegister}
+// User login
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing fields" });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+    const token = generateToken(user._id);
+    return res.json({ success: true, token });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
+export { userRegister, login };
