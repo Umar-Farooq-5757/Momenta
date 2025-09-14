@@ -3,6 +3,7 @@ import connectDB from './config/db.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import userRouter from './routes/user.routes.js'
+import postRouter from './routes/post.routes.js'
 
 dotenv.config()
 const app = express()
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
   res.send('home page')
 })
 app.use('/api/user',userRouter)
+app.use('/api/post',postRouter)
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`)

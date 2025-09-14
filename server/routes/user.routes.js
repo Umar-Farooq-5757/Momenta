@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import protect from "../middlewares/auth.js";
 import { fileURLToPath } from "url";
 const userRouter = express.Router();
 
@@ -20,7 +19,7 @@ const generateToken = (id) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Ensure uploads folder exists
-const uploadDir = path.join(__dirname, "..", "uploads");
+const uploadDir = path.join(__dirname, "..", "uploads/users");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -66,7 +65,7 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `/uploads/users/${req.file.filename}`;
     const user = await User.create({
       username,
       email,
