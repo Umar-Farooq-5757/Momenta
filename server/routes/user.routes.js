@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import protect from "../middlewares/auth.js";
 const userRouter = express.Router();
 
 // generate JWT token
@@ -108,6 +109,53 @@ userRouter.post("/login", async (req, res) => {
     const token = generateToken(user._id);
     return res.json({ success: true, token });
   } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+});
+
+// Follow user
+userRouter.put("/follow/:id", protect, async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user._id);
+    if (!currentUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Current user not found" });
+    }
+    // User to be followed
+    const userToFollow = await User.findById(req.params.id);
+    if (!userToFollow) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User to follow not found" });
+    }
+    // Check if already following
+    if (
+      userToFollow.followers.some(
+        (followerId) => followerId.toString() === currentUser._id.toString()
+      )
+    ) {
+      return res.json({
+        success: false,
+        message: "Already following this user",
+      });
+    }
+    // Add current user to the followers of target user
+    userToFollow.followers.push(currentUser._id);
+
+    // Add target user to the following list of current user
+    currentUser.following.push(userToFollow._id);
+
+    // Save both users
+    await userToFollow.save();
+    await currentUser.save();
+    res.json({
+      success: true,
+      message: "User followed",
+      followers: userToFollow.followers.length,
+    });
+  } catch (err) {
+    console.log(err);
     res.json({ success: false, message: err.message });
   }
 });

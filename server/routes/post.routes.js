@@ -76,7 +76,7 @@ postRouter.get("/", async (req, res) => {
 });
 
 // DELETE POST: only author should be able to do this
-postRouter.delete("/delete/:id", async (req, res) => {
+postRouter.delete("/delete/:id", protect, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
@@ -89,14 +89,108 @@ postRouter.delete("/delete/:id", async (req, res) => {
     // remove file from disk
     const filename = path.basename(post.image);
     const filepath = path.join(uploadDir, filename);
-    fs.unlink(filePath, (err) => {
+    fs.unlink(filepath, (err) => {
       if (err) console.warn("Failed to remove file:", err);
     });
-    await post.remove();
+    await post.deleteOne();
     res.json({ success: true, message: "Deleted post" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Deletion failed" });
+  }
+});
+
+// like the post
+postRouter.put("/like/:id", protect, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.json({ success: false, message: "Post not found" });
+    }
+    if (post.likes.includes(req.user._id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Post already liked" });
+    }
+    // Add user to likes array
+    post.likes.push(req.user._id);
+    await post.save();
+    res.json({
+      success: true,
+      message: "Post liked",
+      likesCount: post.likes.length,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, message: "could not like the post" });
+  }
+});
+
+// dislike the post
+postRouter.put("/dislike/:id", protect, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.json({ success: false, message: "Post not found" });
+    }
+    if (post.dislikes.some((userId) => userId.equals(req.user._id))) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Post already disliked" });
+    }
+    // Remove user from likes array if present
+    post.likes = post.likes.filter((userId) => !userId.equals(req.user._id));
+    // Add user to dislikes array
+    post.dislikes.push(req.user._id);
+    await post.save();
+    res.json({
+      success: true,
+      message: "Post disliked",
+      dislikesCount: post.dislikes.length,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, message: "could not like the post" });
+  }
+});
+
+// Add a comment to post
+postRouter.post("/comment/:id", protect, async (req, res) => {
+  try {
+    const {text} = req.body;
+    if (!text || text.trim() === "") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Comment text cannot be empty" });
+    }
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
+    const comment = {
+      user: req.user._id,
+      text: text.trim(),
+      createdAt: new Date(),
+    };
+    post.comments.push(comment);
+    await post.populate("comments.user", "username profilePic");
+    await post.save();
+    res.status(201).json({
+      success: true,
+      message: "Comment added",
+      comments: post.comments,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, message: "could not add the comment" });
   }
 });
 
