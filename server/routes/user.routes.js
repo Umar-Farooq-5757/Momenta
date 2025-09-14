@@ -75,7 +75,7 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
       bio: {
         age,
         description,
-        location
+        location,
       },
     });
     const token = generateToken(user._id);
