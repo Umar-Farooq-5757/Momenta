@@ -1,9 +1,9 @@
 import express from "express";
 import protect from "../middlewares/auth.js";
 import Post from "../models/Post.model.js";
-import path from 'path'
-import fs from 'fs'
-import multer from 'multer'
+import path from "path";
+import fs from "fs";
+import multer from "multer";
 import { fileURLToPath } from "url";
 const postRouter = express.Router();
 
@@ -53,7 +53,7 @@ postRouter.post(
         author: req.user._id,
       });
       // populate author info if desired
-      // await post.populate('author', 'username profilePic');
+      await post.populate("author", "username profilePic");
       res.status(201).json({ success: true, post });
     } catch (err) {
       console.error(err);
@@ -62,5 +62,42 @@ postRouter.post(
   }
 );
 
+// GET ALL POSTS
+postRouter.get("/", async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("author", "username profilePic")
+      .sort({ createdAt: -1 });
+    return res.json({ success: true, posts });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Could not fetch posts" });
+  }
+});
+
+// DELETE POST: only author should be able to do this
+postRouter.delete("/delete/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.json({ success: false, message: "Not found" });
+    }
+    if (!post.author.equals(req.user._id)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    // remove file from disk
+    const filename = path.basename(post.image);
+    const filepath = path.join(uploadDir, filename);
+    fs.unlink(filePath, (err) => {
+      if (err) console.warn("Failed to remove file:", err);
+    });
+    await post.remove();
+    res.json({ success: true, message: "Deleted post" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Deletion failed" });
+  }
+});
 
 export default postRouter;
