@@ -68,7 +68,7 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
           >
             <AiOutlineLike className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">{likes} likes</span>
+          <span className="text-xs text-[#737373]">{likes.length>0? likes.length:0} likes</span>
         </div>
 
         <div className="flex flex-col items-center gap-0">
@@ -79,7 +79,7 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
           >
             <FaRegCommentAlt className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">{comments} comments</span>
+          <span className="text-xs text-[#737373]">{comments.length>0? comments.length:0} comments</span>
         </div>
       </div>
 

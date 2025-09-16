@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
+import { uploadPost } from "../upload.js";
+import { useNavigate } from "react-router-dom";
 
 export default function NewPost() {
   const { isDark } = useAppContext();
@@ -10,6 +12,7 @@ export default function NewPost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef(null);
   const dropRef = useRef(null);
+  const navigate = useNavigate()
 
   const maxFileSize = 5 * 1024 * 1024; // 5MB
   const captionMax = 2200;
@@ -89,6 +92,8 @@ export default function NewPost() {
       const formData = new FormData();
       formData.append("image", file);
       formData.append("caption", caption);
+      const created = await uploadPost(file, caption);
+       navigate('/');
 
       // Replace with your API endpoint
     //   const res = await fetch("/api/posts", {

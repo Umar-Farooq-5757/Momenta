@@ -1,9 +1,33 @@
 import Post from "../components/Post";
+import { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { dummyPosts } from "../assets/assets";
+import { apiGet } from "../api";
 
 const Home = () => {
   const { setIsSidebarOpen } = useAppContext();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const data = await apiGet("/post"); 
+        if (mounted) setPosts(data.posts);
+      } catch (err) {
+        console.error("fetch posts", err);
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+  if (loading) return <div className="mt-20">Loading posts…</div>;
+  if (!posts.length) return <div className="mt-20">No posts yet</div>;
   return (
     <div
       onClick={() => setIsSidebarOpen(false)}
@@ -13,7 +37,7 @@ const Home = () => {
 
       {/* center posts and add vertical gap */}
       <div className="posts flex flex-col items-center gap-6">
-        {dummyPosts.map((post, i) => (
+        {posts.map((post, i) => (
           <Post
             key={i}
             caption={post.caption}

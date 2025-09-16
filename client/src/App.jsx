@@ -4,10 +4,14 @@ import { LuMenu } from "react-icons/lu";
 import Sidebar from "./components/Sidebar";
 import { useAppContext } from "./context/AppContext";
 import "./App.css";
+import { useAuth } from "./context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function App() {
-  const { isDark, isSidebarOpen, setIsSidebarOpen, user } = useAppContext();
+  const { isDark, isSidebarOpen, setIsSidebarOpen } = useAppContext();
+  const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.querySelector("html").style.backgroundColor = isDark
@@ -15,10 +19,11 @@ function App() {
       : "white";
   }, [isDark]);
 
-  if (!user) {
-    // Redirect to login if not authenticated
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, []);
 
   const showSidebar = user && location.pathname !== "/login";
 

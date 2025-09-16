@@ -15,7 +15,7 @@ export default defineConfig({
       },
       // Also proxy static uploads if needed (so <img src="/uploads/.."> works in dev)
       "/uploads": {
-        target: "http://localhost:5000",
+        target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,
       },

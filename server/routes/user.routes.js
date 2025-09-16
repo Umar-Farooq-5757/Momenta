@@ -107,7 +107,7 @@ userRouter.post("/login", async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
     const token = generateToken(user._id);
-    return res.json({ success: true, token });
+    return res.json({ success: true, user, token });
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
