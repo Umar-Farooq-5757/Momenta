@@ -100,6 +100,16 @@ userRouter.get("/getuser/:id",  async (req, res) => {
   }
 });
 
+// get all users
+userRouter.get("/all",  async (req, res) => {
+  try {
+	const users = await User.find()
+	return res.json({success:true, users})
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+});
+
 // user login
 userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
