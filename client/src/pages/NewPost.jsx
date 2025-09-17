@@ -92,7 +92,7 @@ export default function NewPost() {
       const formData = new FormData();
       formData.append("image", file);
       formData.append("caption", caption);
-      const created = await uploadPost(file, caption);
+      const res = await uploadPost(file, caption);
        navigate('/');
 
       if (!res.ok) throw new Error("Upload failed");
@@ -106,6 +106,8 @@ export default function NewPost() {
       setIsSubmitting(false);
     }
   };
+
+
 
   return (
     <section className="w-full min-h-screen flex justify-center items-start py-20">

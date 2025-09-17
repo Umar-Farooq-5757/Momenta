@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
-
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const { isDark } = useAppContext();
   const { login } = useAuth();
+  const navigate = useNavigate()
 
-  const [state, setState] = useState("login");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
    const [error, setError] = useState(null);
@@ -34,20 +33,8 @@ const Login = () => {
         {error && <div className="text-red-500 mb-2">{error}</div>}
         <p className="text-2xl font-medium m-auto">
           <span className="text-[#c7961c]">User</span>{" "}
-          {state === "login" ? "Login" : "Sign Up"}
+          Login
         </p>
-        {state === "register" && (
-          <div className="w-full">
-            <p>Name</p>
-            <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              className="border border-gray-200 rounded w-full p-2 mt-1 outline-[#c7961c]"
-              type="text"
-              required
-            />
-          </div>
-        )}
         <div className="w-full ">
           <p>Email</p>
           <input
@@ -68,29 +55,17 @@ const Login = () => {
             required
           />
         </div>
-        {state === "register" ? (
-          <p>
-            Already have account?{" "}
-            <span
-              onClick={() => setState("login")}
-              className="text-[#c7961c] cursor-pointer"
-            >
-              click here
-            </span>
-          </p>
-        ) : (
           <p>
             Create an account?{" "}
             <span
-              onClick={() => setState("register")}
+              onClick={() => navigate("/register")}
               className="text-[#c7961c] cursor-pointer"
             >
               click here
             </span>
           </p>
-        )}
         <button className="bg-[#c7961c]  transition-all text-white w-full py-2 rounded-md cursor-pointer">
-          {state === "register" ? "Create Account" : "Login"}
+          Login
         </button>
       </form>
     </div>

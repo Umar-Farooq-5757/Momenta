@@ -1,3 +1,5 @@
+const API = import.meta.env.VITE_API_URL || "/api";
+
 export async function uploadPost(file, caption) {
   const token = localStorage.getItem("token");
   const fd = new FormData();

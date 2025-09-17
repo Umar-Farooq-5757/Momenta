@@ -54,7 +54,7 @@ const Sidebar = () => {
           <MdOutlineCreateNewFolder className="size-7" />
           <p className="text-md">New Post</p>
         </NavLink>
-        <NavLink to={'/newpost'} onClick={()=>{setIsSidebarOpen(false);logout()}} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
+        <NavLink to={'/logout'} onClick={()=>{setIsSidebarOpen(false);logout()}} className={({ isActive }) =>`active:scale-90 w-full flex items-center mb-4 gap-3 ${isActive ? `${isDark?'bg-[#1a1a1a]':'bg-[#eeeff0]'} ` : ''}  ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"} transition-all cursor-pointer rounded-md pl-2 py-2`}>
           <MdLogout className="size-7" />
           <p className="text-md">Logout</p>
         </NavLink>

@@ -9,6 +9,7 @@ import Profile from "./pages/Profile.jsx";
 import Search from "./pages/Search.jsx";
 import Error from "./pages/Error.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import NewPost from "./pages/NewPost.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
       },
       {
         path: "/profile",

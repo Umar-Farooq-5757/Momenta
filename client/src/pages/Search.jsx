@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserCard from "../components/UserCard";
 import { useAppContext } from "../context/AppContext";
 import { dummyUsers } from "../assets/assets";
 import { MdErrorOutline } from "react-icons/md";
+import { apiGet } from "../api";
 
 const Search = () => {
   const {isDark,setIsSidebarOpen} = useAppContext()
   const [searchQuery, setSearchQuery] = useState('')
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+  const getAllUsers = async()=>{
+    const data = await apiGet('/user/all')
+    setUsers(data.users)
+  }
+getAllUsers()
+  }, [])
+  
 
   return (
     <div
@@ -41,10 +51,10 @@ const Search = () => {
       </div>
       {/* Users */}
       <section className="px-1 sm:px-2 min-h-[70vh]">
-        {dummyUsers.length>0?
+        {users.length>0?
       <>
       {searchQuery? <p>Showing results for "{searchQuery}"</p>:<p>All Users</p>}
-        {dummyUsers.filter((user)=>user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+        {users.filter((user)=>user.username.toLowerCase().includes(searchQuery.toLowerCase()))
         .map((user,i)=>{
           return (
         <UserCard key={i} username={user.username}/>
