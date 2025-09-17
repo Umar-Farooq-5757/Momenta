@@ -85,6 +85,21 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
   }
 });
 
+// get user
+userRouter.get("/getuser/:id",  async (req, res) => {
+  try {
+	  const id = req.params.id
+    const user = await User.findById(id)
+	if(!user){
+		return res.json({success:false, message:"User not found"})
+	}
+	
+    return res.json({ success: true, user });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+});
+
 // user login
 userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;

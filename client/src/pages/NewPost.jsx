@@ -95,12 +95,6 @@ export default function NewPost() {
       const created = await uploadPost(file, caption);
        navigate('/');
 
-      // Replace with your API endpoint
-    //   const res = await fetch("/api/posts", {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-
       if (!res.ok) throw new Error("Upload failed");
       setCaption("");
       removeImage();

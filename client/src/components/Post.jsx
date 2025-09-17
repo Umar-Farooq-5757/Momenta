@@ -1,4 +1,4 @@
-import React from "react";
+
 import profilePic from "../assets/profile.avif";
 import { useAppContext } from "../context/AppContext";
 import moment from "moment";
@@ -6,7 +6,8 @@ import { AiOutlineLike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
 
-const Post = ({ caption, image, likes, comments, createdAt }) => {
+
+const Post = ({ caption, image, likes, comments, createdAt, author }) => {
   const { isDark } = useAppContext();
   return (
     <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
@@ -21,7 +22,7 @@ const Post = ({ caption, image, likes, comments, createdAt }) => {
             }`}
           />
           <p className="transition-all hover:font-semibold cursor-pointer">
-            Username here
+            {author.username}
           </p>
         </div>
         <button

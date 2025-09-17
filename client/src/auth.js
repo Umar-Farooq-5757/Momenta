@@ -8,8 +8,8 @@ export async function login(email, password) {
   });
   if (!res.ok) throw new Error("Login failed");
   const data = await res.json();
-  // If backend returns token in response
   const { token, user } = data;
   localStorage.setItem("token", token);
-  return user;
+  localStorage.setItem("user", JSON.stringify(user)); 
+  return { user, token }; 
 }

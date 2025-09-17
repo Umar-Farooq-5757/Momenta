@@ -1,7 +1,7 @@
 import Post from "../components/Post";
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
-import { dummyPosts } from "../assets/assets";
+// import { dummyPosts } from "../assets/assets";
 import { apiGet } from "../api";
 
 const Home = () => {
@@ -13,12 +13,12 @@ const Home = () => {
     let mounted = true;
     async function load() {
       try {
-        const data = await apiGet("/post"); 
+        const data = await apiGet("/post");
         if (mounted) setPosts(data.posts);
       } catch (err) {
         console.error("fetch posts", err);
       } finally {
-        if (mounted) setLoading(false)
+        if (mounted) setLoading(false);
       }
     }
     load();
@@ -26,6 +26,9 @@ const Home = () => {
       mounted = false;
     };
   }, []);
+
+
+
   if (loading) return <div className="mt-20">Loading posts…</div>;
   if (!posts.length) return <div className="mt-20">No posts yet</div>;
   return (
@@ -40,6 +43,7 @@ const Home = () => {
         {posts.map((post, i) => (
           <Post
             key={i}
+            author={post.author}
             caption={post.caption}
             image={post.image}
             likes={post.likes}

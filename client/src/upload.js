@@ -1,5 +1,5 @@
 export async function uploadPost(file, caption) {
-  const token = localStorage.getItem("token"); // or use context
+  const token = localStorage.getItem("token");
   const fd = new FormData();
   fd.append("image", file);
   fd.append("caption", caption || "");

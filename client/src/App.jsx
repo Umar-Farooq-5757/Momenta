@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
 import Sidebar from "./components/Sidebar";
 import { useAppContext } from "./context/AppContext";
 import "./App.css";
 import { useAuth } from "./context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 function App() {
   const { isDark, isSidebarOpen, setIsSidebarOpen } = useAppContext();
@@ -23,7 +22,7 @@ function App() {
     if (!user) {
       navigate("/login");
     }
-  }, []);
+  }, [user, navigate]);
 
   const showSidebar = user && location.pathname !== "/login";
 
@@ -43,8 +42,9 @@ function App() {
           >
             <LuMenu
               onClick={() => setIsSidebarOpen(true)}
-              className="size-8"
+              size={24}
               aria-label="Open sidebar menu"
+              cursor="pointer"
             />
           </div>
           <Sidebar />
