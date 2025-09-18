@@ -1,15 +1,15 @@
 const API = import.meta.env.VITE_API_URL || "/api";
 
 // Register
-export async function register(
+export async function register({
   username,
   email,
   password,
   profilePic,
   age,
   description,
-  location
-) {
+  location,
+}) {
   const formData = new FormData();
   formData.append("username", username);
   formData.append("email", email);

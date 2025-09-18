@@ -194,7 +194,7 @@ export default function NewPost() {
         </div>
 
         <div className="mt-4 flex items-center justify-end gap-3">
-          <button type="submit" disabled={isSubmitting} className={`px-4 py-2 rounded font-medium ${isSubmitting ? "opacity-60 cursor-not-allowed" : "bg-[#c7961c] text-white"}`}>
+          <button type="submit" disabled={isSubmitting} className={`px-4 py-2 cursor-pointer rounded font-medium ${isSubmitting ? "opacity-60 cursor-not-allowed" : "bg-[#c7961c] text-white"}`}>
             {isSubmitting ? "Posting..." : "Post"}
           </button>
         </div>

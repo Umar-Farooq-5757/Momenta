@@ -58,7 +58,7 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
         .status(400)
         .json({ success: false, message: "Missing fields" });
     }
-    const exists = await User.findOne({ email });
+    const exists = await User.findOne({ email })
     if (exists) {
       return res
         .status(400)

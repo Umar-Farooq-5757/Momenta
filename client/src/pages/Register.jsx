@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 import { uploadPost } from "../upload.js";
 import { useNavigate } from "react-router-dom";
-import { register } from "../auth.js";
+// import { register } from "../auth.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Register() {
   const { isDark } = useAppContext();
@@ -13,6 +14,7 @@ export default function Register() {
   const [age, setAge] = useState(0);
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const {register} = useAuth()
 
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
@@ -82,50 +84,44 @@ export default function Register() {
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!profilePic) {
-      setError("Please choose an image before posting.");
-      return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  if (!profilePic) {
+    setError("Please choose an image before registering.");
+    return;
+  }
+  setIsSubmitting(true);
+  try {
+    const { ok, message } = await register({
+      profilePic,
+      username,
+      email,
+      password,
+      age,
+      description,
+      location,
+    });
+    if (!ok) {
+      throw new Error(message || "Registration failed");
     }
-    setIsSubmitting(true);
-    try {
-      // const formData = new FormData();
-      // formData.append("profilePic", profilePic);
-      // formData.append("username", username);
-      // formData.append("email", email);
-      // formData.append("password", password);
-      // formData.append("age", age);
-      // formData.append("description", description);
-      // formData.append("location", location);
-      const created = await register(
-        profilePic,
-        username,
-        email,
-        password,
-        age,
-        description,
-        location
-      );
-      navigate("/");
+    navigate("/");
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setAge(0);
+    setDescription("");
+    setLocation("");
+    removeImage();
+  } catch (err) {
+    console.error(err);
+    setError(err.message || "Something went wrong while registering.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-      if (!res.ok) throw new Error("Upload failed");
-      setUsername('')
-      setEmail('')
-      setPassword('')
-      setAge(null)
-      setDescription('')
-      setLocation('')
-      removeImage();
-      alert("Post uploaded successfully");
-    } catch (err) {
-      console.error(err);
-      setError(err.message || "Something went wrong while uploading.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
 
   return (
     <section className="w-full min-h-screen flex justify-center items-start py-20">
@@ -156,7 +152,7 @@ export default function Register() {
           <input
             ref={inputRef}
             id="image"
-            name="image"
+            name="profilePic"
             type="file"
             accept="image/*"
             onChange={onInputChange}
@@ -261,7 +257,7 @@ export default function Register() {
               <div className="w-full ">
                 <p>Age</p>
                 <input
-                  onChange={(e) => setAge(e.target.value)}
+                  onChange={(e) => setAge(Number(e.target.value))}
                   value={age}
                   className="border border-gray-200 rounded w-full p-2 mt-1 outline-[#c7961c]"
                   type="number"
@@ -296,7 +292,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`px-4 py-2 rounded font-medium ${
+            className={`px-4 py-2 cursor-pointer rounded font-medium ${
               isSubmitting
                 ? "opacity-60 cursor-not-allowed"
                 : "bg-[#c7961c] text-white"

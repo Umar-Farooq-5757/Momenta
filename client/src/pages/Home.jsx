@@ -27,7 +27,13 @@ const Home = () => {
     };
   }, []);
 
-
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
   if (loading) return <div className="mt-20">Loading posts…</div>;
   if (!posts.length) return <div className="mt-20">No posts yet</div>;
@@ -40,7 +46,7 @@ const Home = () => {
 
       {/* center posts and add vertical gap */}
       <div className="posts flex flex-col items-center gap-6">
-        {posts.map((post, i) => (
+        {shuffle(posts).map((post, i) => (
           <Post
             key={i}
             author={post.author}
