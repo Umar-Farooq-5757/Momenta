@@ -75,6 +75,21 @@ postRouter.get("/", async (req, res) => {
   }
 });
 
+// GET POST WITH USER ID
+postRouter.get("/:authorId", async (req, res) => {
+  try {
+	  const { authorId } = req.params;
+	  if (!authorId.match(/^[0-9a-fA-F]{24}$/)) { // basic ObjectId validation
+      return res.status(400).json({ success: false, message: "Invalid author ID" });
+    }
+    const posts = await Post.find({ author: authorId }).sort({ createdAt: -1 });
+    res.json({ success: true, posts });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Could not fetch posts" });
+  }
+});
+
 // DELETE POST: only author should be able to do this
 postRouter.delete("/delete/:id", protect, async (req, res) => {
   try {
