@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAppContext } from "../context/AppContext";
 // import { dummyPosts } from "../assets/assets";
 import { apiGet } from "../api";
+import toast, { Toaster } from "react-hot-toast";
 
 const Home = () => {
   const { setIsSidebarOpen } = useAppContext();
@@ -27,13 +28,13 @@ const Home = () => {
     };
   }, []);
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
-  return array;
-}
 
   if (loading) return <div className="mt-20">Loading posts…</div>;
   if (!posts.length) return <div className="mt-20">No posts yet</div>;
@@ -42,13 +43,25 @@ function shuffle(array) {
       onClick={() => setIsSidebarOpen(false)}
       className="grow min-h-screen my-3 md:my-0 pt-16 px-0 md:px-6 lg:px-8"
     >
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          className: "",
+          style: {
+            border: "1px solid #c7961c",
+            color: "#c7961c",
+          },
+        }}
+      />
       <h1 className="text-3xl font-bold mb-5 ml-4 md:ml-0">All Posts</h1>
-
+      <div></div>
       {/* center posts and add vertical gap */}
       <div className="posts flex flex-col items-center gap-6">
         {shuffle(posts).map((post, i) => (
           <Post
             key={i}
+            profilePic={post.author.profilePic}
             author={post.author}
             caption={post.caption}
             image={post.image}

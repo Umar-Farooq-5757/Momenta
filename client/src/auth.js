@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 const API = import.meta.env.VITE_API_URL || "/api";
 
 // Register
@@ -39,7 +41,10 @@ export async function login(email, password) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Login failed");
+  if (!res.ok) {
+    toast("Login Failed")
+    throw new Error("Login failed");
+  }
   const data = await res.json();
   const { token, user } = data;
   localStorage.setItem("token", token);

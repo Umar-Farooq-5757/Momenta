@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 const Login = () => {
   const { isDark } = useAppContext();
   const { login } = useAuth();
@@ -30,7 +31,8 @@ const Login = () => {
           isDark ? "bg-[#0f0f0f]" : "bg-white"
         }`}
       >
-        {error && <div className="text-red-500 mb-2">{error}</div>}
+        <Toaster/>
+        {/* {error && <div className="text-red-500 mb-2">{error}</div>} */}
         <p className="text-2xl font-medium m-auto">
           <span className="text-[#c7961c]">User</span>{" "}
           Login

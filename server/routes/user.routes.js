@@ -139,9 +139,9 @@ userRouter.post("/login", async (req, res) => {
 });
 
 // Follow user
-userRouter.put("/follow/:id", protect, async (req, res) => {
+userRouter.post("/follow/:id", protect, async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(req.body.currentUserId);
     if (!currentUser) {
       return res
         .status(404)
@@ -159,7 +159,7 @@ userRouter.put("/follow/:id", protect, async (req, res) => {
       userToFollow.followers.some(
         (followerId) => followerId.toString() === currentUser._id.toString()
       )
-    ) {
+    ) { 
       return res.json({
         success: false,
         message: "Already following this user",

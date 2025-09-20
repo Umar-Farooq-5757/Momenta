@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const { isDark, setIsSidebarOpen } = useAppContext();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -20,7 +20,14 @@ const Profile = () => {
     }
     getUserPosts();
   }, [user]);
-
+  useEffect(() => {
+   async function getUser (){
+    const data = await apiGet(`/user/getuser/${user._id}`) 
+    setUser(data.user)
+   }
+   getUser()
+  }, [])
+  
   return (
     <div
       onClick={() => setIsSidebarOpen(false)}
@@ -30,9 +37,7 @@ const Profile = () => {
       <section className=" px-3 sm:px-12 md:px-0 xl:px-20">
         <div className="flex items-center gap-4 sm:gap-12">
           <img
-            className={`size-24 sm:size-28 md:size-36 rounded-full ${
-              isDark ? "invert" : ""
-            }`}
+            className={`size-24 sm:size-28 md:size-36 rounded-full `}
             src={user?.profilePic}
             alt=""
           />
@@ -66,7 +71,7 @@ const Profile = () => {
                   isDark ? "text-[#ffff00]" : "text-[#c7961c]"
                 } text-md mr-1`}
               >
-                129
+                {posts?.length}
               </span>{" "}
               posts
             </p>

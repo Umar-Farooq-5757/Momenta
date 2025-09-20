@@ -1,14 +1,39 @@
-
-import profilePic from "../assets/profile.avif";
+// import profilePic from "../assets/profile.avif";
 import { useAppContext } from "../context/AppContext";
 import moment from "moment";
 import { AiOutlineLike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
+import { apiPost } from "../api";
+import { useAuth } from "../context/AuthContext";
 
-
-const Post = ({ caption, image, likes, comments, createdAt, author }) => {
+const Post = ({
+  caption,
+  image,
+  likes,
+  comments,
+  createdAt,
+  author,
+  profilePic,
+}) => {
+  const {currentUserId} = useAuth()
   const { isDark } = useAppContext();
+    const followUser = async () => {
+    let token = localStorage.getItem('token')
+      const res = await fetch(`/api/user/follow/${author._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({currentUserId})
+      });
+      console.log('success')
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    };
+
+
   return (
     <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
       {/* Profile / Follow button */}
@@ -17,15 +42,14 @@ const Post = ({ caption, image, likes, comments, createdAt, author }) => {
           <img
             src={profilePic}
             alt="profile"
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ${
-              isDark ? "invert" : ""
-            }`}
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover`}
           />
           <p className="transition-all hover:font-semibold cursor-pointer">
             {author.username}
           </p>
         </div>
         <button
+        onClick={()=>followUser()}
           type="button"
           className={`sm:text-[13px] flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
             isDark
@@ -69,7 +93,9 @@ const Post = ({ caption, image, likes, comments, createdAt, author }) => {
           >
             <AiOutlineLike className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">{likes.length>0? likes.length:0} likes</span>
+          <span className="text-xs text-[#737373]">
+            {likes.length > 0 ? likes.length : 0} likes
+          </span>
         </div>
 
         <div className="flex flex-col items-center gap-0">
@@ -80,7 +106,9 @@ const Post = ({ caption, image, likes, comments, createdAt, author }) => {
           >
             <FaRegCommentAlt className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">{comments.length>0? comments.length:0} comments</span>
+          <span className="text-xs text-[#737373]">
+            {comments.length > 0 ? comments.length : 0} comments
+          </span>
         </div>
       </div>
 
