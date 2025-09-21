@@ -21,11 +21,10 @@ const Post = ({
   const { isDark } = useAppContext();
   const followUser = async () => {
     let token = localStorage.getItem("token");
-    if(author._id == user._id){
-      toast('You cannot follow yourself')
-    }
-    else if (!user.following.includes(author._id)) {
-      console.log(user.following)
+    if (author._id == user._id) {
+      toast.error("You cannot follow yourself");
+    } else if (!user.following.includes(author._id)) {
+      console.log(user.following);
       const res = await fetch(`/api/user/follow/${author._id}`, {
         method: "POST",
         headers: {
@@ -34,14 +33,43 @@ const Post = ({
         },
         body: JSON.stringify({ currentUserId: user._id }),
       });
-      toast('Success')
+      toast.success("Success");
       if (!res.ok) throw new Error(await res.text());
       return res.json();
+    } else {
+      toast.error("Already following this user");
     }
-    else{
-      toast('Already following this user')
-    }
+  };
 
+  const unFollowUser = async () => {
+    let token = localStorage.getItem("token");
+    if (author._id === user._id) {
+      toast.error("You cannot unfollow yourself");
+      return;
+    } else if (user.following.includes(author._id)) {
+      try {
+        const res = await fetch(`/api/user/unfollow/${author._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ currentUserId: user._id }),
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          toast.error(`Failed: ${errorText}`);
+          return;
+        }
+        toast.success("Successfully unfollowed");
+        return res.json();
+      } catch (error) {
+        toast.error("An error occurred");
+        console.error(error);
+      }
+    } else {
+      toast.error("Already not following this user");
+    }
   };
 
   return (
@@ -60,7 +88,9 @@ const Post = ({
           </p>
         </div>
         <button
-          onClick={() => followUser()}
+          onClick={() => {
+            user.following.includes(author._id) ? unFollowUser() : followUser();
+          }}
           type="button"
           className={`sm:text-[13px] cursor-pointer flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
             isDark
@@ -69,7 +99,7 @@ const Post = ({
           } active:scale-95 transition`}
         >
           <SlUserFollow className="size-3 sm:size-4" />
-          Follow
+          {user.following.includes(author._id) ? "Following" : "Follow"}
         </button>
       </div>
 

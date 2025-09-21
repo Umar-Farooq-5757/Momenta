@@ -185,4 +185,55 @@ userRouter.post("/follow/:id", protect, async (req, res) => {
   }
 });
 
+// UnFollow user
+userRouter.post("/unfollow/:id", protect, async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.body.currentUserId);
+    if (!currentUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Current user not found" });
+    }
+    // User to be unfollowed
+    const userToUnFollow = await User.findById(req.params.id);
+    if (!userToUnFollow) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User to unfollow not found" });
+    }
+    // Check if NOT currently following
+	if (
+	  !userToUnFollow.followers.some(
+		(followerId) => followerId.toString() === currentUser._id.toString()
+	  )
+	) {
+	  return res.json({
+		success: false,
+		message: "Not following this user currently",
+	  });
+	}
+
+    // Remove current user from the followers of target user
+	const newUserArr = userToUnFollow.followers.filter((user) => currentUser._id.toString() !== user._id.toString());
+userToUnFollow.followers = newUserArr;
+
+    // Remove target user from the following list of current user
+	const newCurrentUserArr = currentUser.following.filter(userId => userId.toString() !== userToUnFollow._id.toString());
+	currentUser.following = newCurrentUserArr;
+
+
+    // Save both users
+    await userToUnFollow.save();
+    await currentUser.save();
+    res.json({
+      success: true,
+      message: "User unfollowed",
+      followers: userToFollow.followers.length,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, message: err.message });
+  }
+});
+
 export default userRouter;
