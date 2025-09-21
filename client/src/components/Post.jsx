@@ -6,6 +6,7 @@ import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
 import { apiPost } from "../api";
 import { useAuth } from "../context/AuthContext";
+import toast, { Toaster } from "react-hot-toast";
 
 const Post = ({
   caption,
@@ -16,27 +17,37 @@ const Post = ({
   author,
   profilePic,
 }) => {
-  const {currentUserId} = useAuth()
+  const { user } = useAuth();
   const { isDark } = useAppContext();
-    const followUser = async () => {
-    let token = localStorage.getItem('token')
+  const followUser = async () => {
+    let token = localStorage.getItem("token");
+    if(author._id == user._id){
+      toast('You cannot follow yourself')
+    }
+    else if (!user.following.includes(author._id)) {
+      console.log(user.following)
       const res = await fetch(`/api/user/follow/${author._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({currentUserId})
+        body: JSON.stringify({ currentUserId: user._id }),
       });
-      console.log('success')
+      toast('Success')
       if (!res.ok) throw new Error(await res.text());
       return res.json();
-    };
+    }
+    else{
+      toast('Already following this user')
+    }
 
+  };
 
   return (
     <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
       {/* Profile / Follow button */}
+      <Toaster position="top-right" />
       <div className="flex justify-between items-center px-0 sm:px-1 md:px-2">
         <div className="flex items-center gap-2 md:gap-4">
           <img
@@ -49,9 +60,9 @@ const Post = ({
           </p>
         </div>
         <button
-        onClick={()=>followUser()}
+          onClick={() => followUser()}
           type="button"
-          className={`sm:text-[13px] flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
+          className={`sm:text-[13px] cursor-pointer flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
             isDark
               ? "hover:border-[#c7961c] bg-black text-white hover:bg-[#fff5dc]"
               : "hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]"

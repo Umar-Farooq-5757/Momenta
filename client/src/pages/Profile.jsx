@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const { isDark, setIsSidebarOpen } = useAppContext();
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -20,14 +20,7 @@ const Profile = () => {
     }
     getUserPosts();
   }, [user]);
-  useEffect(() => {
-   async function getUser (){
-    const data = await apiGet(`/user/getuser/${user._id}`) 
-    setUser(data.user)
-   }
-   getUser()
-  }, [])
-  
+
   return (
     <div
       onClick={() => setIsSidebarOpen(false)}

@@ -42,7 +42,7 @@ export async function login(email, password) {
     body: JSON.stringify({ email, password }),
   });
   if (!res.ok) {
-    toast("Login Failed")
+    toast.error("Invalid credentials")
     throw new Error("Login failed");
   }
   const data = await res.json();

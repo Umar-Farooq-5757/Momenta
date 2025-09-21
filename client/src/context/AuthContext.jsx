@@ -6,14 +6,7 @@ import {
   Children,
 } from "react";
 import * as authService from "../auth.js";
-import { jwtDecode } from "jwt-decode";
-
-// fetch("/api/auth/me", {
-//   headers: { Authorization: `Bearer ${token}` }
-// }).then(res => res.json())
-//   .then(data => {
-//     const currentUserId = data._id;
-//   });
+import { apiGet } from "../api.js";
 
 const AuthContext = createContext();
 
@@ -25,6 +18,13 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
+  useEffect(() => {
+    async function getUser() {
+      const data = await apiGet(`/user/getuser/${user._id}`);
+      setUser(data.user);
+    }
+    getUser();
+  }, [user]);
 
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,6 @@ export const AuthProvider = ({ children }) => {
     if (token) localStorage.setItem("token", token);
     else localStorage.removeItem("token");
   }, [token]);
-  const decoded = token ? jwtDecode(token) : null;
-  const currentUserId = decoded ? decoded.id : null;
   const login = async (email, password) => {
     setLoading(true);
     try {
@@ -85,7 +83,6 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        currentUserId,
       }}
     >
       {children}
