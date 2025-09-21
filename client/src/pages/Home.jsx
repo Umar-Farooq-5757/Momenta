@@ -61,11 +61,13 @@ const Home = () => {
         {shuffle(posts).map((post, i) => (
           <Post
             key={i}
+            postId={post._id}
             profilePic={post.author.profilePic}
             author={post.author}
             caption={post.caption}
             image={post.image}
             likes={post.likes}
+            dislikes={post.dislikes}
             comments={post.comments.length}
             createdAt={post.createdAt}
           />

@@ -2,6 +2,7 @@
 import { useAppContext } from "../context/AppContext";
 import moment from "moment";
 import { AiOutlineLike } from "react-icons/ai";
+import { AiOutlineDislike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
 import { apiPost } from "../api";
@@ -9,9 +10,11 @@ import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 
 const Post = ({
+  postId,
   caption,
   image,
   likes,
+  dislikes,
   comments,
   createdAt,
   author,
@@ -19,8 +22,8 @@ const Post = ({
 }) => {
   const { user } = useAuth();
   const { isDark } = useAppContext();
+  let token = localStorage.getItem("token");
   const followUser = async () => {
-    let token = localStorage.getItem("token");
     if (author._id == user._id) {
       toast.error("You cannot follow yourself");
     } else if (!user.following.includes(author._id)) {
@@ -33,7 +36,7 @@ const Post = ({
         },
         body: JSON.stringify({ currentUserId: user._id }),
       });
-      toast.success("Success");
+      toast.success("Following this user");
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     } else {
@@ -42,7 +45,6 @@ const Post = ({
   };
 
   const unFollowUser = async () => {
-    let token = localStorage.getItem("token");
     if (author._id === user._id) {
       toast.error("You cannot unfollow yourself");
       return;
@@ -70,6 +72,34 @@ const Post = ({
     } else {
       toast.error("Already not following this user");
     }
+  };
+
+  const likePost = async () => {
+    const res = await fetch(`/api/post/like/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ currentUserId: user._id }),
+    });
+    toast.success("Liked this post");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  };
+
+  const dislikePost = async () => {
+    const res = await fetch(`/api/post/dislike/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ currentUserId: user._id }),
+    });
+    toast.error("Disliked this post");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
   };
 
   return (
@@ -128,6 +158,7 @@ const Post = ({
       <div className="flex items-center gap-4 py-2">
         <div className="flex flex-col items-center gap-0">
           <button
+            onClick={() => likePost()}
             className={`rounded-full ${
               isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
             } p-2 transition-all`}
@@ -136,6 +167,19 @@ const Post = ({
           </button>
           <span className="text-xs text-[#737373]">
             {likes.length > 0 ? likes.length : 0} likes
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-0">
+          <button
+            onClick={() => dislikePost()}
+            className={`rounded-full ${
+              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
+            } p-2 transition-all`}
+          >
+            <AiOutlineDislike className="text-xl md:text-2xl cursor-pointer" />
+          </button>
+          <span className="text-xs text-[#737373]">
+            {dislikes.length > 0 ? dislikes.length : 0} dislikes
           </span>
         </div>
 

@@ -116,19 +116,21 @@ postRouter.delete("/delete/:id", protect, async (req, res) => {
 });
 
 // like the post
-postRouter.put("/like/:id", protect, async (req, res) => {
+postRouter.post("/like/:id", protect, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.json({ success: false, message: "Post not found" });
     }
-    if (post.likes.includes(req.user._id)) {
+    if (post.likes.includes(req.body.currentUserId)) {
       return res
         .status(400)
         .json({ success: false, message: "Post already liked" });
     }
+	 // Remove user from dislikes array if present
+    post.dislikes = post.dislikes.filter((userId) => userId.equals(req.body.currentUserId));
     // Add user to likes array
-    post.likes.push(req.user._id);
+    post.likes.push(req.body.currentUserId);
     await post.save();
     res.json({
       success: true,
@@ -144,21 +146,21 @@ postRouter.put("/like/:id", protect, async (req, res) => {
 });
 
 // dislike the post
-postRouter.put("/dislike/:id", protect, async (req, res) => {
+postRouter.post("/dislike/:id", protect, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.json({ success: false, message: "Post not found" });
     }
-    if (post.dislikes.some((userId) => userId.equals(req.user._id))) {
+    if (post.dislikes.some((userId) => userId.equals(req.body.currentUserId))) {
       return res
         .status(400)
         .json({ success: false, message: "Post already disliked" });
     }
     // Remove user from likes array if present
-    post.likes = post.likes.filter((userId) => !userId.equals(req.user._id));
+    post.likes = post.likes.filter((userId) => !userId.equals(req.body.currentUserId));
     // Add user to dislikes array
-    post.dislikes.push(req.user._id);
+    post.dislikes.push(req.body.currentUserId);
     await post.save();
     res.json({
       success: true,
@@ -169,7 +171,7 @@ postRouter.put("/dislike/:id", protect, async (req, res) => {
     console.log(err);
     res
       .status(500)
-      .json({ success: false, message: "could not like the post" });
+      .json({ success: false, message: "could not dislike the post" });
   }
 });
 
