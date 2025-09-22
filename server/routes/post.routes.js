@@ -4,38 +4,56 @@ import Post from "../models/Post.model.js";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { fileURLToPath } from "url";
 const postRouter = express.Router();
 
-// Create __dirname equivalent in ES module scope
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-// Ensure uploads folder exists
-const uploadDir = path.join(__dirname, "..", "uploads/posts");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+// Config cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// multer storage and validation
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-    cb(null, name);
+// Storage for post images
+const postStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "momenta/posts",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    transformation: [{ quality: "auto" }],
   },
 });
 
-function fileFilter(req, file, cb) {
-  // Accept images only
-  if (!file.mimetype.startsWith("image/")) {
-    return cb(new Error("File is not an image"), false);
-  }
-  cb(null, true);
-}
+// Create __dirname equivalent in ES module scope
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// Ensure uploads folder exists
+// const uploadDir = path.join(__dirname, "..", "uploads/posts");
+// if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+// multer storage and validation
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, uploadDir),
+//   filename: (req, file, cb) => {
+//     const ext = path.extname(file.originalname);
+//     const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+//     cb(null, name);
+//   },
+// });
+
+// function fileFilter(req, file, cb) {
+//   // Accept images only
+//   if (!file.mimetype.startsWith("image/")) {
+//     return cb(new Error("File is not an image"), false);
+//   }
+//   cb(null, true);
+// }
 
 const upload = multer({
-  storage,
+  storage: postStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  fileFilter,
 });
 
 // Route for new post
@@ -46,10 +64,14 @@ postRouter.post(
   async (req, res) => {
     try {
       if (!req.file) return res.status(400).json({ message: "Image required" });
-      const imageUrl = `/uploads/posts/${req.file.filename}`; // client will request this URL
+      // const imageUrl = `/uploads/posts/${req.file.filename}`; // client will request this URL
+      const imageUrl = req.file.path || req.file.secure_url || req.file.url;
+      const publicId = req.file.filename || req.file.public_id; // store for deletion later
+
       const post = await Post.create({
         caption: req.body.caption || "",
         image: imageUrl,
+        imagePublicId: publicId,
         author: req.user._id,
       });
       // populate author info if desired
@@ -80,9 +102,13 @@ postRouter.get("/:authorId", async (req, res) => {
   try {
     const { authorId } = req.params;
     if (!authorId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: "Invalid author ID" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid author ID" });
     }
-    const posts = await Post.find({ author: authorId }).populate("author", "username profilePic").sort({ createdAt: -1 });
+    const posts = await Post.find({ author: authorId })
+      .populate("author", "username profilePic")
+      .sort({ createdAt: -1 });
     res.json({ success: true, posts });
   } catch (err) {
     console.log(err);
@@ -90,9 +116,8 @@ postRouter.get("/:authorId", async (req, res) => {
   }
 });
 
-
 // DELETE POST: only author should be able to do this
-postRouter.delete("/delete/:id", protect, async (req, res) => {
+postRouter.post("/delete/:id", protect, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
@@ -103,11 +128,18 @@ postRouter.delete("/delete/:id", protect, async (req, res) => {
     }
 
     // remove file from disk
-    const filename = path.basename(post.image);
-    const filepath = path.join(uploadDir, filename);
-    fs.unlink(filepath, (err) => {
-      if (err) console.warn("Failed to remove file:", err);
-    });
+    // const filename = path.basename(post.image);
+    // const filepath = path.join(uploadDir, filename);
+    // fs.unlink(filepath, (err) => {
+    //   if (err) console.warn("Failed to remove file:", err);
+    // });
+
+    // delete image from Cloudinary if public id present
+    if (post.imagePublicId) {
+      await cloudinary.uploader
+        .destroy(post.imagePublicId)
+        .catch((e) => console.warn("Cloudinary delete failed:", e));
+    }
     await post.deleteOne();
     res.json({ success: true, message: "Deleted post" });
   } catch (err) {
@@ -128,8 +160,10 @@ postRouter.post("/like/:id", protect, async (req, res) => {
         .status(400)
         .json({ success: false, message: "Post already liked" });
     }
-	 // Remove user from dislikes array if present
-    post.dislikes = post.dislikes.filter((userId) => !userId.equals(req.body.currentUserId));
+    // Remove user from dislikes array if present
+    post.dislikes = post.dislikes.filter(
+      (userId) => !userId.equals(req.body.currentUserId)
+    );
     // Add user to likes array
     post.likes.push(req.body.currentUserId);
     await post.save();
@@ -159,7 +193,9 @@ postRouter.post("/dislike/:id", protect, async (req, res) => {
         .json({ success: false, message: "Post already disliked" });
     }
     // Remove user from likes array if present
-    post.likes = post.likes.filter((userId) => !userId.equals(req.body.currentUserId));
+    post.likes = post.likes.filter(
+      (userId) => !userId.equals(req.body.currentUserId)
+    );
     // Add user to dislikes array
     post.dislikes.push(req.body.currentUserId);
     await post.save();
@@ -179,7 +215,7 @@ postRouter.post("/dislike/:id", protect, async (req, res) => {
 // Add a comment to post
 postRouter.post("/comment/:id", protect, async (req, res) => {
   try {
-    const {text} = req.body;
+    const { text } = req.body;
     if (!text || text.trim() === "") {
       return res
         .status(400)
