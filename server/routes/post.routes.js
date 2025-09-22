@@ -78,17 +78,18 @@ postRouter.get("/", async (req, res) => {
 // GET POST WITH USER ID
 postRouter.get("/:authorId", async (req, res) => {
   try {
-	  const { authorId } = req.params;
-	  if (!authorId.match(/^[0-9a-fA-F]{24}$/)) { // basic ObjectId validation
+    const { authorId } = req.params;
+    if (!authorId.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ success: false, message: "Invalid author ID" });
     }
-    const posts = await Post.find({ author: authorId }).sort({ createdAt: -1 });
+    const posts = await Post.find({ author: authorId }).populate("author", "username profilePic").sort({ createdAt: -1 });
     res.json({ success: true, posts });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Could not fetch posts" });
   }
 });
+
 
 // DELETE POST: only author should be able to do this
 postRouter.delete("/delete/:id", protect, async (req, res) => {
@@ -128,7 +129,7 @@ postRouter.post("/like/:id", protect, async (req, res) => {
         .json({ success: false, message: "Post already liked" });
     }
 	 // Remove user from dislikes array if present
-    post.dislikes = post.dislikes.filter((userId) => userId.equals(req.body.currentUserId));
+    post.dislikes = post.dislikes.filter((userId) => !userId.equals(req.body.currentUserId));
     // Add user to likes array
     post.likes.push(req.body.currentUserId);
     await post.save();

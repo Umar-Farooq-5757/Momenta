@@ -16,7 +16,11 @@ const Profile = () => {
 
     async function getUserPosts() {
       const data = await apiGet(`/post/${user._id}`);
-      setPosts(data.posts);
+      if (data?.success) {
+        setPosts(data.posts); 
+      } else {
+        setPosts([]);
+      }
     }
     getUserPosts();
   }, [user]);
@@ -80,7 +84,7 @@ const Profile = () => {
       <section className="px-3 sm:px-12 md:px-0 xl:px-20">
         <h2 className="font-semibold text-lg sm:text-2xl mb-4">Posts:</h2>
         <div className="grid justify-center grid-cols-3 sm:grid-cols-4 md:grid-cols-3 xl:grid-cols-4 gap-3 mb-3">
-          {posts.map((post, index) => {
+          {posts?.map((post, index) => {
             return (
               <div
                 key={index}
