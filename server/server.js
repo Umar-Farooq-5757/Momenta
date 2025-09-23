@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
@@ -15,19 +14,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Create __dirname equivalent
+// __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Serve uploads if you expect to store them locally (note: ephemeral on Vercel)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(cors({ origin: true })); 
+// Enable CORS for all origins or specify your frontend origin
+app.use(cors({ origin: true }));
 
-
+// Routes
 app.get("/", (req, res) => res.send("home page"));
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 
-// serve client in production only if you're intentionally serving frontend from same project
+// Serve client in production if bundled with backend on same project
 if (process.env.NODE_ENV === "production") {
   const clientDist = path.join(__dirname, "..", "client", "dist");
   app.use(express.static(clientDist));
@@ -36,10 +38,10 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Connect DB at cold-start
-await connectDB();
+// Connect to MongoDB using environment variable
+await connectDB(process.env.MONGO_URI);
 
-// Only listen when running locally (not on Vercel)
+// Listen only locally, not on Vercel serverless
 if (!process.env.VERCEL) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log(`server started on port ${port}`));
