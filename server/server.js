@@ -38,8 +38,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Connect to MongoDB using environment variable
-await connectDB(process.env.MONGO_URI);
+// Connect to MongoDB
+await connectDB();
 
 // Listen only locally, not on Vercel serverless
 if (!process.env.VERCEL) {
