@@ -5,6 +5,7 @@ import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
+const API = import.meta.env.VITE_API_URL || "/api";
 
 const Post = ({
   postId,
@@ -28,7 +29,7 @@ const Post = ({
         return;
       }
       if (!user.following.includes(author._id)) {
-        const res = await fetch(`/api/user/follow/${author._id}`, {
+        const res = await fetch(`${API}/user/follow/${author._id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -59,7 +60,7 @@ const Post = ({
         return;
       }
       if (user.following.includes(author._id)) {
-        const res = await fetch(`/api/user/unfollow/${author._id}`, {
+        const res = await fetch(`${API}/user/unfollow/${author._id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -85,7 +86,7 @@ const Post = ({
 
   const likePost = async () => {
     try {
-      const res = await fetch(`/api/post/like/${postId}`, {
+      const res = await fetch(`${API}/post/like/${postId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -108,7 +109,7 @@ const Post = ({
 
   const dislikePost = async () => {
     try {
-      const res = await fetch(`/api/post/dislike/${postId}`, {
+      const res = await fetch(`${API}/post/dislike/${postId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
