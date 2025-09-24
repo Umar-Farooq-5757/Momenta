@@ -1,11 +1,13 @@
+// import profilePic from "../assets/profile.avif";
 import { useAppContext } from "../context/AppContext";
 import moment from "moment";
-import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { AiOutlineLike } from "react-icons/ai";
+import { AiOutlineDislike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
+import { apiPost } from "../api";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
-const API = import.meta.env.VITE_API_URL || "/api";
 
 const Post = ({
   postId,
@@ -20,47 +22,35 @@ const Post = ({
 }) => {
   const { user } = useAuth();
   const { isDark } = useAppContext();
-  const token = localStorage.getItem("token");
-
+  let token = localStorage.getItem("token");
   const followUser = async () => {
-    try {
-      if (author._id === user._id) {
-        toast.error("You cannot follow yourself");
-        return;
-      }
-      if (!user.following.includes(author._id)) {
-        const res = await fetch(`${API}/user/follow/${author._id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ currentUserId: user._id }),
-        });
-        if (!res.ok) {
-          const errorText = await res.text();
-          toast.error(`Failed to follow: ${errorText}`);
-          return;
-        }
-        toast.success("Following this user");
-        return res.json();
-      } else {
-        toast.error("Already following this user");
-      }
-    } catch (error) {
-      toast.error("An error occurred while following");
-      console.error(error);
+    if (author._id == user._id) {
+      toast.error("You cannot follow yourself");
+    } else if (!user.following.includes(author._id)) {
+      console.log(user.following);
+      const res = await fetch(`/api/user/follow/${author._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ currentUserId: user._id }),
+      });
+      toast.success("Following this user");
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    } else {
+      toast.error("Already following this user");
     }
   };
 
   const unFollowUser = async () => {
-    try {
-      if (author._id === user._id) {
-        toast.error("You cannot unfollow yourself");
-        return;
-      }
-      if (user.following.includes(author._id)) {
-        const res = await fetch(`${API}/user/unfollow/${author._id}`, {
+    if (author._id === user._id) {
+      toast.error("You cannot unfollow yourself");
+      return;
+    } else if (user.following.includes(author._id)) {
+      try {
+        const res = await fetch(`/api/user/unfollow/${author._id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -70,90 +60,69 @@ const Post = ({
         });
         if (!res.ok) {
           const errorText = await res.text();
-          toast.error(`Failed to unfollow: ${errorText}`);
+          toast.error(`Failed: ${errorText}`);
           return;
         }
         toast.success("Successfully unfollowed");
         return res.json();
-      } else {
-        toast.error("You are not following this user");
+      } catch (error) {
+        toast.error("An error occurred");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("An error occurred while unfollowing");
-      console.error(error);
+    } else {
+      toast.error("Already not following this user");
     }
   };
 
   const likePost = async () => {
-    try {
-      const res = await fetch(`${API}/post/like/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ currentUserId: user._id }),
-      });
-      if (!res.ok) {
-        const errorText = await res.text();
-        toast.error(`Failed to like: ${errorText}`);
-        return;
-      }
-      toast.success("Liked this post", { icon: "👍" });
-      return res.json();
-    } catch (error) {
-      toast.error("An error occurred while liking");
-      console.error(error);
-    }
+    const res = await fetch(`/api/post/like/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ currentUserId: user._id }),
+    });
+    toast.success("Liked this post");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
   };
 
   const dislikePost = async () => {
-    try {
-      const res = await fetch(`${API}/post/dislike/${postId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ currentUserId: user._id }),
-      });
-      if (!res.ok) {
-        const errorText = await res.text();
-        toast.error(`Failed to dislike: ${errorText}`);
-        return;
-      }
-      toast.error("Disliked this post", { icon: "👎" });
-      return res.json();
-    } catch (error) {
-      toast.error("An error occurred while disliking");
-      console.error(error);
-    }
+    const res = await fetch(`/api/post/dislike/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ currentUserId: user._id }),
+    });
+    toast.error("Disliked this post");
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
   };
 
   return (
     <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
+      {/* Profile / Follow button */}
       <Toaster position="top-right" />
       <div className="flex justify-between items-center px-0 sm:px-1 md:px-2">
         <div className="flex items-center gap-2 md:gap-4">
           <img
             src={profilePic}
             alt="profile"
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-full object-cover`}
           />
           <p className="transition-all hover:font-semibold cursor-pointer">
             {author.username}
           </p>
         </div>
         <button
-          onClick={async () => {
-            if (user.following.includes(author._id)) {
-              await unFollowUser();
-            } else {
-              await followUser();
-            }
+          onClick={() => {
+            user.following.includes(author._id) ? unFollowUser() : followUser();
           }}
           type="button"
-          className={`sm:text-[13px] cursor-pointer flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded hover:text-[#c7961c] ${
+          className={`sm:text-[13px] cursor-pointer flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
             isDark
               ? "hover:border-[#c7961c] bg-black text-white hover:bg-[#fff5dc]"
               : "hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]"
@@ -164,6 +133,7 @@ const Post = ({
         </button>
       </div>
 
+      {/* Actual Image */}
       <div
         className={`image mt-4 mb-2 rounded-md overflow-hidden border ${
           isDark ? "border-[#1a1a1a]" : "border-gray-100"
@@ -175,6 +145,7 @@ const Post = ({
         </picture>
       </div>
 
+      {/* Meta */}
       <p
         className={`${
           isDark ? "text-[#737373]" : "text-[#737373]"
@@ -183,10 +154,11 @@ const Post = ({
         {moment(createdAt).fromNow()}
       </p>
 
+      {/* Actions */}
       <div className="flex items-center gap-4 py-2">
         <div className="flex flex-col items-center gap-0">
           <button
-            onClick={likePost}
+            onClick={() => likePost()}
             className={`rounded-full ${
               isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
             } p-2 transition-all`}
@@ -199,7 +171,7 @@ const Post = ({
         </div>
         <div className="flex flex-col items-center gap-0">
           <button
-            onClick={dislikePost}
+            onClick={() => dislikePost()}
             className={`rounded-full ${
               isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
             } p-2 transition-all`}
@@ -225,6 +197,7 @@ const Post = ({
         </div>
       </div>
 
+      {/* Caption */}
       <p className="break-words">{caption}</p>
       <hr className="my-5" />
     </section>

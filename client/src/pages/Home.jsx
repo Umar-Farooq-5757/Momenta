@@ -4,14 +4,11 @@ import { useAppContext } from "../context/AppContext";
 // import { dummyPosts } from "../assets/assets";
 import { apiGet } from "../api";
 import toast, { Toaster } from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
-import CommentsModal from "../modals/CommentsModal";
 
 const Home = () => {
   const { setIsSidebarOpen } = useAppContext();
-  const { posts, setPosts } = useAuth();
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -59,11 +56,6 @@ const Home = () => {
       />
       <h1 className="text-3xl font-bold mb-5 ml-4 md:ml-0">All Posts</h1>
       <div></div>
-      {/* Comments Modal */}
-      <CommentsModal
-        isCommentsModalOpen={isCommentsModalOpen}
-        setIsCommentsModalOpen={setIsCommentsModalOpen}
-      />
       {/* center posts and add vertical gap */}
       <div className="posts flex flex-col items-center gap-6">
         {shuffle(posts).map((post, i) => (

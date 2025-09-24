@@ -3,8 +3,6 @@ import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -18,51 +16,37 @@ const generateToken = (id) => {
   });
 };
 
-// // Create __dirname equivalent in ES module scope
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// // Ensure uploads folder exists
-// const uploadDir = path.join(__dirname, "..", "uploads/users");
-// if (!fs.existsSync(uploadDir)) {
-//   fs.mkdirSync(uploadDir, { recursive: true });
-// }
+// Create __dirname equivalent in ES module scope
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Ensure uploads folder exists
+const uploadDir = path.join(__dirname, "..", "uploads/users");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // USING MULTER
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => cb(null, uploadDir),
-//   filename: (req, file, cb) => {
-//     const ext = path.extname(file.originalname);
-//     const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-//     cb(null, name);
-//   },
-// });
-
-// const fileFilter = (req, file, cb) => {
-//   // Accept images only
-//   if (!file.mimetype.startsWith("image/")) {
-//     return cb(new Error("File is not an image"), false);
-//   }
-//   cb(null, true);
-// };
-
-// Config cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-// Storage for use profile picture
-const userStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "momenta/users",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-    transformation: [{ width: 500, crop: "limit" }],
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    cb(null, name);
   },
 });
+
+const fileFilter = (req, file, cb) => {
+  // Accept images only
+  if (!file.mimetype.startsWith("image/")) {
+    return cb(new Error("File is not an image"), false);
+  }
+  cb(null, true);
+};
+
 const upload = multer({
-  storage: userStorage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter,
 });
 
 // sign in/ user register
@@ -74,7 +58,7 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
         .status(400)
         .json({ success: false, message: "Missing fields" });
     }
-    const exists = await User.findOne({ email });
+    const exists = await User.findOne({ email })
     if (exists) {
       return res
         .status(400)
@@ -82,15 +66,12 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // const imageUrl = `/uploads/users/${req.file.filename}`;
-    const imageUrl = req.file?.path;
-    const publicId = req.file?.filename;
+    const imageUrl = `/uploads/users/${req.file.filename}`;
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
       profilePic: imageUrl,
-       profilePicPublicId: publicId,
       bio: {
         age,
         description,
@@ -105,14 +86,14 @@ userRouter.post("/register", upload.single("profilePic"), async (req, res) => {
 });
 
 // get user
-userRouter.get("/getuser/:id", async (req, res) => {
+userRouter.get("/getuser/:id",  async (req, res) => {
   try {
-    const id = req.params.id;
-    const user = await User.findById(id);
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
-    }
-
+	  const id = req.params.id
+    const user = await User.findById(id)
+	if(!user){
+		return res.json({success:false, message:"User not found"})
+	}
+	
     return res.json({ success: true, user });
   } catch (err) {
     res.json({ success: false, message: err.message });
@@ -120,10 +101,10 @@ userRouter.get("/getuser/:id", async (req, res) => {
 });
 
 // get all users
-userRouter.get("/all", async (req, res) => {
+userRouter.get("/all",  async (req, res) => {
   try {
-    const users = await User.find();
-    return res.json({ success: true, users });
+	const users = await User.find()
+	return res.json({success:true, users})
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
@@ -166,34 +147,41 @@ userRouter.post("/follow/:id", protect, async (req, res) => {
         .status(404)
         .json({ success: false, message: "Current user not found" });
     }
+    // User to be followed
     const userToFollow = await User.findById(req.params.id);
     if (!userToFollow) {
       return res
         .status(404)
         .json({ success: false, message: "User to follow not found" });
     }
+    // Check if already following
     if (
       userToFollow.followers.some(
         (followerId) => followerId.toString() === currentUser._id.toString()
       )
-    ) {
+    ) { 
       return res.json({
         success: false,
         message: "Already following this user",
       });
     }
+    // Add current user to the followers of target user
     userToFollow.followers.push(currentUser._id);
+
+    // Add target user to the following list of current user
     currentUser.following.push(userToFollow._id);
+
+    // Save both users
     await userToFollow.save();
     await currentUser.save();
-    return res.json({
+    res.json({
       success: true,
       message: "User followed",
       followers: userToFollow.followers.length,
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ success: false, message: err.message });
+    console.log(err);
+    res.json({ success: false, message: err.message });
   }
 });
 
@@ -206,34 +194,45 @@ userRouter.post("/unfollow/:id", protect, async (req, res) => {
         .status(404)
         .json({ success: false, message: "Current user not found" });
     }
+    // User to be unfollowed
     const userToUnFollow = await User.findById(req.params.id);
     if (!userToUnFollow) {
       return res
         .status(404)
         .json({ success: false, message: "User to unfollow not found" });
     }
-    if (
-      !userToUnFollow.followers.some(
-        (followerId) => followerId.toString() === currentUser._id.toString()
-      )
-    ) {
-      return res.json({
-        success: false,
-        message: "Not following this user currently",
-      });
-    }
-    userToUnFollow.followers = userToUnFollow.followers.filter(
-      (userId) => userId.toString() !== currentUser._id.toString()
-    );
-    currentUser.following = currentUser.following.filter(
-      (userId) => userId.toString() !== userToUnFollow._id.toString()
-    );
+    // Check if NOT currently following
+	if (
+	  !userToUnFollow.followers.some(
+		(followerId) => followerId.toString() === currentUser._id.toString()
+	  )
+	) {
+	  return res.json({
+		success: false,
+		message: "Not following this user currently",
+	  });
+	}
+
+    // Remove current user from the followers of target user
+	const newUserArr = userToUnFollow.followers.filter((user) => currentUser._id.toString() !== user._id.toString());
+userToUnFollow.followers = newUserArr;
+
+    // Remove target user from the following list of current user
+	const newCurrentUserArr = currentUser.following.filter(userId => userId.toString() !== userToUnFollow._id.toString());
+	currentUser.following = newCurrentUserArr;
+
+
+    // Save both users
     await userToUnFollow.save();
     await currentUser.save();
-    return res.json({ success: true, message: "User unfollowed" });
+    res.json({
+      success: true,
+      message: "User unfollowed",
+      followers: userToFollow.followers.length,
+    });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ success: false, message: err.message });
+    console.log(err);
+    res.json({ success: false, message: err.message });
   }
 });
 
