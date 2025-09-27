@@ -202,24 +202,22 @@ userRouter.post("/unfollow/:id", protect, async (req, res) => {
         .json({ success: false, message: "User to unfollow not found" });
     }
     // Check if NOT currently following
-	if (
-	  !userToUnFollow.followers.some(
-		(followerId) => followerId.toString() === currentUser._id.toString()
-	  )
-	) {
-	  return res.json({
-		success: false,
-		message: "Not following this user currently",
-	  });
-	}
-
-    // Remove current user from the followers of target user
-	const newUserArr = userToUnFollow.followers.filter((user) => currentUser._id.toString() !== user._id.toString());
-userToUnFollow.followers = newUserArr;
-
-    // Remove target user from the following list of current user
-	const newCurrentUserArr = currentUser.following.filter(userId => userId.toString() !== userToUnFollow._id.toString());
-	currentUser.following = newCurrentUserArr;
+if (
+      !userToUnFollow.followers.some(
+        (followerId) => followerId.toString() === currentUser._id.toString()
+      )
+    ) {
+      return res.json({
+        success: false,
+        message: "Not following this user currently",
+      });
+    }
+    userToUnFollow.followers = userToUnFollow.followers.filter(
+      (userId) => userId.toString() !== currentUser._id.toString()
+    );
+    currentUser.following = currentUser.following.filter(
+      (userId) => userId.toString() !== userToUnFollow._id.toString()
+    );
 
 
     // Save both users

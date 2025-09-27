@@ -127,8 +127,10 @@ postRouter.post("/like/:id", protect, async (req, res) => {
         .status(400)
         .json({ success: false, message: "Post already liked" });
     }
-	 // Remove user from dislikes array if present
-    post.dislikes = post.dislikes.filter((userId) => userId.equals(req.body.currentUserId));
+	  // Remove user from dislikes array if present
+    post.dislikes = post.dislikes.filter(
+      (userId) => !userId.equals(req.body.currentUserId)
+    );
     // Add user to likes array
     post.likes.push(req.body.currentUserId);
     await post.save();
@@ -158,7 +160,9 @@ postRouter.post("/dislike/:id", protect, async (req, res) => {
         .json({ success: false, message: "Post already disliked" });
     }
     // Remove user from likes array if present
-    post.likes = post.likes.filter((userId) => !userId.equals(req.body.currentUserId));
+     post.likes = post.likes.filter(
+      (userId) => !userId.equals(req.body.currentUserId)
+    );
     // Add user to dislikes array
     post.dislikes.push(req.body.currentUserId);
     await post.save();

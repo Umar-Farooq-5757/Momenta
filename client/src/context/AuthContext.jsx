@@ -19,15 +19,12 @@ export const AuthProvider = ({ children }) => {
     }
   });
   useEffect(() => {
-    if (user && user._id) {
-      async function getUser() {
-        const data = await apiGet(`/user/getuser/${user._id}`);
-        setUser(data.user);
-      }
-      getUser();
+    async function getUser() {
+      const data = await apiGet(`/user/getuser/${user._id}`);
+      setUser(data.user);
     }
-  }, [user?._id]);
-  const [posts, setPosts] = useState([]);
+    getUser();
+  }, [user]);
 
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [loading, setLoading] = useState(false);
@@ -37,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       localStorage.removeItem("user");
     }
-  }, [user]);
+  }, []);
   useEffect(() => {
     if (token) localStorage.setItem("token", token);
     else localStorage.removeItem("token");
@@ -86,8 +83,6 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        posts,
-        setPosts
       }}
     >
       {children}
