@@ -1,11 +1,9 @@
-// import profilePic from "../assets/profile.avif";
+// Post.jsx
 import { useAppContext } from "../context/AppContext";
 import moment from "moment";
-import { AiOutlineLike } from "react-icons/ai";
-import { AiOutlineDislike } from "react-icons/ai";
+import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
-import { apiPost } from "../api";
 import { useAuth } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -13,42 +11,54 @@ const Post = ({
   postId,
   caption,
   image,
-  likes,
-  dislikes,
-  comments,
+  likes = [],
+  dislikes = [],
+  comments = [],
   createdAt,
-  author,
+  author = {},
   profilePic,
+  openComments, // new prop
 }) => {
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // single call
   const { isDark } = useAppContext();
-  let token = localStorage.getItem("token");
+
+  console.log("Post comments prop:", comments);
+
   const followUser = async () => {
-    if (author._id == user._id) {
+    if (!user) { toast.error("Login first"); return; }
+    if (author._id === user._id) {
       toast.error("You cannot follow yourself");
-    } else if (!user.following.includes(author._id)) {
-      console.log(user.following);
-      const res = await fetch(`/api/user/follow/${author._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ currentUserId: user._id }),
-      });
-      toast.success("Following this user");
-      if (!res.ok) throw new Error(await res.text());
-      return res.json();
+      return;
+    }
+    if (!user.following.includes(author._id)) {
+      try {
+        const res = await fetch(`/api/user/follow/${author._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ currentUserId: user._id }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        toast.success("Following this user");
+        return res.json();
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to follow");
+      }
     } else {
       toast.error("Already following this user");
     }
   };
 
   const unFollowUser = async () => {
+    if (!user) { toast.error("Login first"); return; }
     if (author._id === user._id) {
       toast.error("You cannot unfollow yourself");
       return;
-    } else if (user.following.includes(author._id)) {
+    }
+    if (user.following.includes(author._id)) {
       try {
         const res = await fetch(`/api/user/unfollow/${author._id}`, {
           method: "POST",
@@ -66,8 +76,8 @@ const Post = ({
         toast.success("Successfully unfollowed");
         return res.json();
       } catch (error) {
-        toast.error("An error occurred");
         console.error(error);
+        toast.error("An error occurred");
       }
     } else {
       toast.error("Already not following this user");
@@ -75,6 +85,7 @@ const Post = ({
   };
 
   const likePost = async () => {
+    if (!user) { toast.error("Login first"); return; }
     const res = await fetch(`/api/post/like/${postId}`, {
       method: "POST",
       headers: {
@@ -83,12 +94,16 @@ const Post = ({
       },
       body: JSON.stringify({ currentUserId: user._id }),
     });
+    if (!res.ok) {
+      toast.error("Failed to like");
+      throw new Error(await res.text());
+    }
     toast.success("Liked this post");
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   };
 
   const dislikePost = async () => {
+    if (!user) { toast.error("Login first"); return; }
     const res = await fetch(`/api/post/dislike/${postId}`, {
       method: "POST",
       headers: {
@@ -97,14 +112,16 @@ const Post = ({
       },
       body: JSON.stringify({ currentUserId: user._id }),
     });
+    if (!res.ok) {
+      toast.error("Failed to dislike");
+      throw new Error(await res.text());
+    }
     toast.error("Disliked this post");
-    if (!res.ok) throw new Error(await res.text());
     return res.json();
   };
 
   return (
     <section className="w-full max-w-[45rem] mx-auto p-2 sm:p-3">
-      {/* Profile / Follow button */}
       <Toaster position="top-right" />
       <div className="flex justify-between items-center px-0 sm:px-1 md:px-2">
         <div className="flex items-center gap-2 md:gap-4">
@@ -119,85 +136,55 @@ const Post = ({
         </div>
         <button
           onClick={() => {
-            user.following.includes(author._id) ? unFollowUser() : followUser();
+            user?.following?.includes(author._id) ? unFollowUser() : followUser();
           }}
           type="button"
           className={`sm:text-[13px] cursor-pointer flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${
-            isDark
-              ? "hover:border-[#c7961c] bg-black text-white hover:bg-[#fff5dc]"
-              : "hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]"
+            isDark ? "hover:border-[#c7961c] bg-black text-white hover:bg-[#fff5dc]" : "hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]"
           } active:scale-95 transition`}
         >
           <SlUserFollow className="size-3 sm:size-4" />
-          {user.following.includes(author._id) ? "Following" : "Follow"}
+          {user?.following?.includes(author._id) ? "Following" : "Follow"}
         </button>
       </div>
 
-      {/* Actual Image */}
-      <div
-        className={`image mt-4 mb-2 rounded-md overflow-hidden border ${
-          isDark ? "border-[#1a1a1a]" : "border-gray-100"
-        }`}
-      >
+      <div className={`image mt-4 mb-2 rounded-md overflow-hidden border ${isDark ? "border-[#1a1a1a]" : "border-gray-100"}`}>
         <picture>
           <source srcSet={image} type="image/avif" />
           <img src={image} alt="post" loading="lazy" />
         </picture>
       </div>
 
-      {/* Meta */}
-      <p
-        className={`${
-          isDark ? "text-[#737373]" : "text-[#737373]"
-        } text-xs md:text-sm`}
-      >
+      <p className={`${isDark ? "text-[#737373]" : "text-[#737373]"} text-xs md:text-sm`}>
         {moment(createdAt).fromNow()}
       </p>
 
-      {/* Actions */}
       <div className="flex items-center gap-4 py-2">
         <div className="flex flex-col items-center gap-0">
-          <button
-            onClick={() => likePost()}
-            className={`rounded-full ${
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
-            } p-2 transition-all`}
-          >
+          <button onClick={likePost} className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
             <AiOutlineLike className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">
-            {likes.length > 0 ? likes.length : 0} likes
-          </span>
+          <span className="text-xs text-[#737373]">{likes.length > 0 ? likes.length : 0} likes</span>
         </div>
+
         <div className="flex flex-col items-center gap-0">
-          <button
-            onClick={() => dislikePost()}
-            className={`rounded-full ${
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
-            } p-2 transition-all`}
-          >
+          <button onClick={dislikePost} className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}>
             <AiOutlineDislike className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">
-            {dislikes.length > 0 ? dislikes.length : 0} dislikes
-          </span>
+          <span className="text-xs text-[#737373]">{dislikes.length > 0 ? dislikes.length : 0} dislikes</span>
         </div>
 
         <div className="flex flex-col items-center gap-0">
           <button
-            className={`rounded-full ${
-              isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"
-            } p-2 transition-all`}
+            onClick={() => openComments(comments, postId)} // <-- simplified
+            className={`rounded-full ${isDark ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-200"} p-2 transition-all`}
           >
             <FaRegCommentAlt className="text-xl md:text-2xl cursor-pointer" />
           </button>
-          <span className="text-xs text-[#737373]">
-            {comments.length > 0 ? comments.length : 0} comments
-          </span>
+          <span className="text-xs text-[#737373]">{comments.length > 0 ? comments.length : 0} comments</span>
         </div>
       </div>
 
-      {/* Caption */}
       <p className="break-words">{caption}</p>
       <hr className="my-5" />
     </section>

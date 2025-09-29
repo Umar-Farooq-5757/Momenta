@@ -226,7 +226,7 @@ if (
     res.json({
       success: true,
       message: "User unfollowed",
-      followers: userToFollow.followers.length,
+      followers: userToUnFollow.followers.length,
     });
   } catch (err) {
     console.log(err);
