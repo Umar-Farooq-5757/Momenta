@@ -124,7 +124,7 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <section className="w-full min-h-screen flex justify-center items-start py-20">
+    <section className="w-full min-h-screen flex  justify-center items-start py-20">
       <form
         onSubmit={handleSubmit}
         className={`${
@@ -191,7 +191,7 @@ const handleSubmit = async (e) => {
               </div>
             </>
           ) : (
-            <div className="w-full flex flex-col md:flex-row gap-4 items-start">
+            <div className="w-full flex flex-col gap-4 items-start">
               <div className="w-full md:w-1/2">
                 <div className="rounded overflow-hidden border">
                   <img

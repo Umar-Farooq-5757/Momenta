@@ -53,12 +53,13 @@ const CommentsModal = ({
               const key = comment._id || `${i}-${comment.text?.slice(0,10)}`;
               return (
                 <div key={key} className={`comment ${isDark ? "bg-[#202020] shadow-[#303030]" : "bg-white"} py-2 pl-1 md:pl-3 shadow-md rounded-md flex items-start gap-2 md:gap-3`}>
-                  <picture>
+                  {/* <picture>
                     <source srcSet={Architecture} type="image/avif" />
                     <img className="rounded-full size-8 md:size-10 object-center" src={Architecture} alt="author" loading="lazy" />
-                  </picture>
+                  </picture> */}
                   <div className="max-w-[87%]">
-                    <h4 className="font-semibold text-sm">{comment.author?.username || "Author name"}</h4>
+                    {/* <h4 className="font-semibold text-sm">{comment.author?.username || "Author name"}</h4> */}
+                    <h4 className="font-semibold text-sm">Comment {i+1}</h4>
                     <p className="text-justify text-sm pr-2">{comment.text}</p>
                   </div>
                 </div>

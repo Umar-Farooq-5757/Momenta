@@ -11,10 +11,10 @@ const UserCard = ({username}) => {
         <img className={`size-7 sm:size-9 rounded-full ${isDark?'invert':''}`} src={profilePic} alt="profile pic" />
         <h2 className='text-[13px] sm:text-[16px]'>{username}</h2>
       </div>
-      <button type="button" className={`sm:text-[13px] flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${isDark?'hover:border-[#ffff00] bg-black text-white hover:bg-[#fff5dc]':'hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]'} active:scale-95 transition`}>
+      {/* <button type="button" className={`sm:text-[13px] flex items-center gap-2.5 border border-gray-500/30 px-2 py-1 sm:px-4 sm:py-2 text-sm text-gray-800 rounded  hover:text-[#c7961c]  ${isDark?'hover:border-[#ffff00] bg-black text-white hover:bg-[#fff5dc]':'hover:border-[#c7961c] bg-white hover:bg-[#fff5dc]'} active:scale-95 transition`}>
                 <SlUserFollow className='size-3 sm:size-4'/>
                 Follow
-            </button>
+            </button> */}
     </div>
   )
 }
